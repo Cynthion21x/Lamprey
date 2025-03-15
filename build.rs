@@ -22,7 +22,6 @@ fn main() {
 
     println!("cargo:rerun-if-changed=assets");
     println!("cargo:rustc-link-lib=z");
-    println!("cargo:rustc-link-lib=tcod");
 
 }
 
