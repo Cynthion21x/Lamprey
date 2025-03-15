@@ -2,5 +2,8 @@
 name = "lamprey"
 version = "0.1.0"
 edition = "2024"
+build = "build.rs"
 
 [dependencies]
+tcod = "0.15.0"
+tcod-sys = "5.0.1"
