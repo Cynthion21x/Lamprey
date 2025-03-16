@@ -1,5 +1,2 @@
 /target
 *.DS_store
-
-
-println!("sprites: {}, spris.spritees.len(;
