@@ -21,7 +21,6 @@ fn main() {
     copy_dir(&assets_src, &assets_dest).unwrap();
 
     println!("cargo:rerun-if-changed=assets");
-    println!("cargo:rustc-link-lib=z");
 
 }
 
