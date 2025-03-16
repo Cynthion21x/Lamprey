@@ -5,4 +5,12 @@ edition = "2024"
 build = "build.rs"
 
 [dependencies]
-sdl2 = "0.37.0"
+
+[dependencies.sdl2]
+version = "0.37.0"
+default-features = false
+features = ["image"]
+
+[lints.rust]
+unused_imports = "allow"
+unused_variables = "allow"
