@@ -2,9 +2,15 @@ use sdl2::{keyboard::Keycode, EventPump, event::Event};
 
 use crate::rendering;
 
+pub enum State {
+    MainMenu,
+    Game
+}
+
 pub struct Game {
    pub running: bool,
-   event_pump: EventPump
+   event_pump: EventPump,
+   state: State,
 }
 
 impl Game {
@@ -12,7 +18,8 @@ impl Game {
     pub fn new(event_pump: EventPump) -> Self {
         Self { 
             running: true,
-            event_pump
+            event_pump: event_pump,
+            state: State::MainMenu,
         }
     }
     

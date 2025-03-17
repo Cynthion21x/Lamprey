@@ -21,6 +21,8 @@ fn main() {
     copy_dir(&assets_src, &assets_dest).unwrap();
 
     println!("cargo:rerun-if-changed=assets");
+    println!("cargo:rustc-link-search=native=D:\\msys2\\mingw64\\lib");
+    println!("cargo:rustc-link-lib=SDL2");
 
 }
 
