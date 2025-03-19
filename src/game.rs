@@ -1,6 +1,5 @@
 use sdl2::{keyboard::Keycode, EventPump, event::Event};
-
-use crate::rendering;
+use crate::{content::sprite::SpriteMan, rendering::{self, renderer::Renderer}};
 
 pub enum State {
     MainMenu,
@@ -13,16 +12,18 @@ pub struct Inputs {
     pub key_pressed: Option<Keycode>,
 }
 
-pub struct Game {
+pub struct Game<'a> {
    pub running: bool,
    event_pump: EventPump,
+   renderer: Renderer,
+   sprites: SpriteMan<'a>,
    state: State,
    input: Inputs,
 }
 
-impl Game {
+impl<'a> Game<'a> {
  
-    pub fn new(event_pump: EventPump) -> Self {
+    pub fn new(event_pump: EventPump, sprites: SpriteMan<'a>, renderer: Renderer) -> Self {
         
         let input = Inputs {
             mouse_pos: (0, 0),
@@ -34,6 +35,8 @@ impl Game {
             running: true,
             event_pump,
             state: State::MainMenu,
+            sprites,
+            renderer,
             input
         }
     }
@@ -66,7 +69,14 @@ impl Game {
         } 
     }
     
-    pub fn render(&self) {
+    pub fn render(&mut self) {
+        
+        self.renderer.clear();
+        
+        let grass = self.sprites.sprite_from_string("grass").unwrap();
+        self.renderer.draw((0, 0), (500, 500), grass);
+        
+        self.renderer.present();
         
     }
     

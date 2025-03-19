@@ -29,19 +29,19 @@ impl<'a> SpriteMan<'a> {
             let ext = y.extension().unwrap_or(&OsStr::new(""));
             let location = y.to_str().unwrap();
             let name = y.file_stem().unwrap();
-           
+            
             if ext == "png" {
                
-               if let Ok(texture) = loader.load_texture(location) {
-
-                   let file_name: String = name
-                       .to_str()
-                       .unwrap()
-                       .into();
-
-                   sprites.push((texture, file_name));
-               }
-           }            
+                if let Ok(texture) = loader.load_texture(location) {
+                    
+                    let file_name: String = name
+                        .to_str()
+                        .unwrap()
+                        .into();
+                    
+                    sprites.push((texture, file_name));
+                }
+            }
         }
         
         Self { 
@@ -49,12 +49,12 @@ impl<'a> SpriteMan<'a> {
             sprite: sprites,
         }
         
-    }    
+    }
     
-    pub fn sprite_from_string(&self, sprite: String) -> Option<&Texture<'a>> {
+    pub fn sprite_from_string(&self, sprite: &str) -> Option<&Texture<'a>> {
         for i in 0..self.sprite.len() {
             if self.sprite[i].1 == sprite {
-                Some(&self.sprite[i].0);
+                return Some(&self.sprite[i].0);
             } 
         }
         None

@@ -16,11 +16,8 @@ fn main() -> Result<(), String> {
     let window_m = window::WindowM::new(&video_subsystem);    
     let texture_maker = window_m.canvas.texture_creator();
     let sprites = sprite::SpriteMan::new(&texture_maker);  
-    let mut renderer = renderer::Renderer{window:window_m};
-    let mut core = game::Game::new(event_pump);
-    
-    renderer.clear();
-    renderer.window.canvas.present();
+    let renderer = renderer::Renderer{window:window_m};
+    let mut core = game::Game::new(event_pump, sprites, renderer);
     
     while core.running {
        core.input();

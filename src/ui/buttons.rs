@@ -13,7 +13,7 @@ pub struct Button<'a> {
 }
 
 impl<'a> Button<'a> {
-    fn new(pos: (u32, u32), size: (u32, u32), sprite: String, spriteman: &'a SpriteMan) -> Self {
+    fn new(pos: (u32, u32), size: (u32, u32), sprite: &str, spriteman: &'a SpriteMan) -> Self {
         let tex = spriteman.sprite_from_string(sprite).expect("sprite not found");
         Self { 
             pos,
