@@ -3,6 +3,8 @@ use sdl2::render::{Texture, TextureCreator};
 use sdl2::sys::LockMask;
 use sdl2::video::{Window, WindowContext};
 use sdl2::render::Canvas;
+use sdl2::Error;
+use std::ffi::OsStr;
 use std::{fs, env};
 use std::fmt::Display;
 use crate::config;
@@ -24,7 +26,7 @@ impl<'a> SpriteMan<'a> {
         for i in paths {
             
             let y = i.unwrap().path();
-            let ext = y.extension().unwrap();
+            let ext = y.extension().unwrap_or(&OsStr::new(""));
             let location = y.to_str().unwrap();
             let name = y.file_stem().unwrap();
            
@@ -32,7 +34,7 @@ impl<'a> SpriteMan<'a> {
                
                if let Ok(texture) = loader.load_texture(location) {
 
-                   let file_name: String = *name
+                   let file_name: String = name
                        .to_str()
                        .unwrap()
                        .into();
@@ -48,4 +50,13 @@ impl<'a> SpriteMan<'a> {
         }
         
     }    
+    
+    pub fn sprite_from_string(&self, sprite: String) -> Option<&Texture<'a>> {
+        for i in 0..self.sprite.len() {
+            if self.sprite[i].1 == sprite {
+                Some(&self.sprite[i].0);
+            } 
+        }
+        None
+    }
 }

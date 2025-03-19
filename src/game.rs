@@ -7,25 +7,34 @@ pub enum State {
     Game
 }
 
+pub struct Inputs {
+    pub mouse_pos: (u32, u32),
+    pub mouse_pressed: bool,
+    pub key_pressed: Option<Keycode>,
+}
+
 pub struct Game {
    pub running: bool,
    event_pump: EventPump,
    state: State,
-   pub mousePos: (u32, u32),
-   pub mousePressed: bool,
-   pub keyPressed: Option<Event>,
+   input: Inputs,
 }
 
 impl Game {
  
     pub fn new(event_pump: EventPump) -> Self {
+        
+        let input = Inputs {
+            mouse_pos: (0, 0),
+            mouse_pressed: false,
+            key_pressed: None
+        };
+        
         Self { 
             running: true,
-            event_pump: event_pump,
+            event_pump,
             state: State::MainMenu,
-            mousePos: (0, 0),
-            mousePressed: false,
-            keyPressed: None
+            input
         }
     }
     
@@ -35,18 +44,26 @@ impl Game {
     
     pub fn input(&mut self) {
        
-       for event in self.event_pump.poll_iter() {
-           
-           match event {
-               Event::Quit {..} => {
-                   self.running = false
-               },
-               Event::KeyDown {..} => {
-                   self.keyPressed = Some(event)
-               },
-               _ => {}               
-           }
-       } 
+        self.input.mouse_pressed = false;
+        self.input.key_pressed = None;
+        for event in self.event_pump.poll_iter() {
+            
+            match event {
+                Event::Quit {..} => {
+                    self.running = false
+                },
+                Event::KeyDown {keycode, ..} => {
+                    self.input.key_pressed = Some(keycode).unwrap()
+                },
+                Event::MouseButtonDown {..} => {
+                    self.input.mouse_pressed = true
+                },
+                Event::MouseMotion {x, y, .. } => {
+                    self.input.mouse_pos = (x as u32, y as u32)
+                }
+                _ => {}               
+            }
+        } 
     }
     
     pub fn render(&self) {
