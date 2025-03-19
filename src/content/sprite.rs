@@ -9,7 +9,7 @@ use crate::config;
 
 pub struct SpriteMan<'a> {
     pub texture_maker: &'a TextureCreator<WindowContext>,
-    pub sprite: Vec<Texture<'a>>
+    pub sprite: Vec<(Texture<'a>, String)>
 }
 
 impl<'a> SpriteMan<'a> {
@@ -24,18 +24,21 @@ impl<'a> SpriteMan<'a> {
         for i in paths {
             
             let y = i.unwrap().path();
-            let file: &str = y.to_str().unwrap();
+            let ext = y.extension().unwrap();
+            let location = y.to_str().unwrap();
+            let name = y.file_stem().unwrap();
            
-            let ext = { 
-                let split = file.char_indices().nth_back(2).unwrap().0;
-                &file[split..]
-            };
-                
             if ext == "png" {
                
-               if let Ok(texture) = loader.load_texture(file) {
-                   sprites.push(texture);
-               }                             
+               if let Ok(texture) = loader.load_texture(location) {
+
+                   let file_name: String = *name
+                       .to_str()
+                       .unwrap()
+                       .into();
+
+                   sprites.push((texture, file_name));
+               }
            }            
         }
         

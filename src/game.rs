@@ -11,6 +11,9 @@ pub struct Game {
    pub running: bool,
    event_pump: EventPump,
    state: State,
+   pub mousePos: (u32, u32),
+   pub mousePressed: bool,
+   pub keyPressed: Option<Event>,
 }
 
 impl Game {
@@ -20,6 +23,9 @@ impl Game {
             running: true,
             event_pump: event_pump,
             state: State::MainMenu,
+            mousePos: (0, 0),
+            mousePressed: false,
+            keyPressed: None
         }
     }
     
@@ -32,9 +38,11 @@ impl Game {
        for event in self.event_pump.poll_iter() {
            
            match event {
-               Event::Quit {..} |
-               Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+               Event::Quit {..} => {
                    self.running = false
+               },
+               Event::KeyDown {..} => {
+                   self.keyPressed = Some(event)
                },
                _ => {}               
            }
