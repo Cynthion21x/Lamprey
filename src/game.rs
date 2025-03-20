@@ -1,10 +1,12 @@
 use sdl2::{keyboard::Keycode, EventPump, event::Event};
 use crate::{content::sprite::SpriteMan, rendering::{self, renderer::Renderer}};
 use crate::ui::buttons;
+use crate::scenes;
 
 pub enum State {
     MainMenu,
-    Game
+    Game,
+    Town
 }
 
 pub struct Inputs {
@@ -20,6 +22,11 @@ pub struct Game<'a> {
    sprites: SpriteMan<'a>,
    state: State,
    input: Inputs,
+
+   main_menu: scenes::main_menu::MainMenu,
+   town: scenes::town::Town,
+   game: scenes::game::Game,
+
 }
 
 impl<'a> Game<'a> {
@@ -38,12 +45,11 @@ impl<'a> Game<'a> {
             state: State::MainMenu,
             sprites,
             renderer,
-            input
+            input,
+            main_menu: scenes::main_menu::MainMenu::new(),
+            town: scenes::town::Town::new(),
+            game: scenes::game::Game::new(),
         }
-    }
-    
-    pub fn update(&self) {
-        
     }
     
     pub fn input(&mut self) {
@@ -70,11 +76,29 @@ impl<'a> Game<'a> {
         } 
     }
     
+    pub fn update(&self) {
+
+        match self.state {
+            
+            State::MainMenu => { self.main_menu.update() },
+            State::Game => { self.game.update() },
+            State::Town => { self.town.update() },
+
+        }
+
+    }
+
     pub fn render(&mut self) {
         
         self.renderer.clear();
         
-        
+         match self.state {
+            
+            State::MainMenu => { self.main_menu.render() },
+            State::Game => { self.game.render() },
+            State::Town => { self.town.render() },
+
+        }       
         
         self.renderer.present();
         

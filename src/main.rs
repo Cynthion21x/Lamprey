@@ -1,6 +1,7 @@
 pub mod content;
 pub mod rendering;
 pub mod ui;
+pub mod scenes;
 pub mod utils;
 mod config;
 use rendering::{renderer, window};
