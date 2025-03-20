@@ -1,5 +1,5 @@
 use sdl2::{keyboard::Keycode, EventPump, event::Event};
-use crate::{content::sprite::SpriteMan, rendering::{self, renderer::Renderer}};
+use crate::{content::asset::AssetMan, rendering::{self, renderer::Renderer}};
 use crate::ui::buttons;
 use crate::scenes;
 
@@ -19,7 +19,7 @@ pub struct Game<'a> {
    pub running: bool,
    event_pump: EventPump,
    renderer: Renderer,
-   sprites: SpriteMan<'a>,
+   assets: AssetMan<'a>,
    state: State,
    input: Inputs,
 
@@ -31,7 +31,7 @@ pub struct Game<'a> {
 
 impl<'a> Game<'a> {
  
-    pub fn new(event_pump: EventPump, sprites: SpriteMan<'a>, renderer: Renderer) -> Self {
+    pub fn new(event_pump: EventPump, assets: AssetMan<'a>, renderer: Renderer) -> Self {
         
         let input = Inputs {
             mouse_pos: (0, 0),
@@ -43,7 +43,7 @@ impl<'a> Game<'a> {
             running: true,
             event_pump,
             state: State::MainMenu,
-            sprites,
+            assets,
             renderer,
             input,
             main_menu: scenes::main_menu::MainMenu::new(),
@@ -78,11 +78,13 @@ impl<'a> Game<'a> {
     
     pub fn update(&self) {
 
+        if !self.running { return };
+
         match self.state {
             
-            State::MainMenu => { self.main_menu.update() },
-            State::Game => { self.game.update() },
-            State::Town => { self.town.update() },
+            State::MainMenu => { self.main_menu.update(&self) },
+            State::Game => { self.game.update(&self) },
+            State::Town => { self.town.update(&self) },
 
         }
 
@@ -90,17 +92,25 @@ impl<'a> Game<'a> {
 
     pub fn render(&mut self) {
         
+        if !self.running { return };
+        
         self.renderer.clear();
         
          match self.state {
             
-            State::MainMenu => { self.main_menu.render() },
-            State::Game => { self.game.render() },
-            State::Town => { self.town.render() },
+            State::MainMenu => { self.main_menu.render(&self) },
+            State::Game => { self.game.render(&self) },
+            State::Town => { self.town.render(&self) },
 
         }       
         
         self.renderer.present();
+        
+    }
+
+    pub fn close(&mut self) {
+
+        self.assets.drop();
         
     }
     

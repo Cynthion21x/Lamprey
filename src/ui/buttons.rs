@@ -1,6 +1,6 @@
 use sdl2::render::Texture;
 use std::any::Any;
-use crate::content::sprite::SpriteMan;
+use crate::content::asset::AssetMan;
 use crate::game::Inputs;
 use crate::rendering::renderer::{self, Renderer};
 use crate::utils;
@@ -15,8 +15,8 @@ pub struct Button<'a> {
 }
 
 impl<'a> Button<'a> {
-    fn new(pos: (u32, u32), size: (u32, u32), sprite: &str, spriteman: &'a SpriteMan) -> Self {
-        let tex = spriteman.sprite_from_string(sprite).expect("sprite not found");
+    fn new(pos: (u32, u32), size: (u32, u32), sprite: &str, assetman: &'a AssetMan) -> Self {
+        let tex = assetman.sprite_from_string(sprite).expect("sprite not found");
         Self { 
             pos,
             size,

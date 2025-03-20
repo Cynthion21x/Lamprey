@@ -1,10 +1,10 @@
 use crate::game;
 
-pub struct Game {
+pub struct MainMenu {
 
 }
 
-impl Game {
+impl MainMenu {
 
     pub fn new() -> Self {
         Self { }

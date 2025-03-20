@@ -9,7 +9,7 @@ build = "build.rs"
 [dependencies.sdl2]
 version = "0.37.0"
 default-features = false
-features = ["image"]
+features = ["image", "ttf"]
 
 [lints.rust]
 unused_imports = "allow"

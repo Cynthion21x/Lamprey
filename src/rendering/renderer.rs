@@ -1,7 +1,7 @@
-use sdl2::{render::Texture, pixels::Color, rect};
+use sdl2::{render::Texture, pixels::Color, rect, ttf::Font};
 use crate::config::{GAME_HEIGHT, TILE_SIZE};
 use crate::rendering::window; 
-use crate::content::sprite;
+use crate::content::asset;
 use crate::utils::in_range;
 
 use super::window::WindowM;
@@ -49,6 +49,10 @@ impl Renderer {
             .copy(sprite, None, location)
             .expect("Get better at drawing gui bozo");
         
+    }
+
+    pub fn draw_font(&mut self, pos: (u32, u32), size: u32, font: &Font) {
+
     }
     
     pub fn clear(&mut self) {

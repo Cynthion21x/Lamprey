@@ -1,3 +1,5 @@
+use crate::game;
+
 pub struct Town {
 
 }
@@ -8,11 +10,11 @@ impl Town {
         Self { }
     }
 
-    pub fn update(&self) {
+    pub fn update(&self, game: &game::Game) {
 
     }
 
-    pub fn render(&self) {
+    pub fn render(&self, game: &game::Game) {
 
     }
 
