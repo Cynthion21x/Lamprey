@@ -2,6 +2,7 @@ use sdl2::render::Texture;
 use std::any::Any;
 use crate::content::sprite::SpriteMan;
 use crate::game::Inputs;
+use crate::rendering::renderer::{self, Renderer};
 use crate::utils;
 
 pub struct Button<'a> {
@@ -10,6 +11,7 @@ pub struct Button<'a> {
     pressed: bool,
     hover: bool,
     texture: &'a Texture<'a>,
+    visible: bool,
 }
 
 impl<'a> Button<'a> {
@@ -20,11 +22,14 @@ impl<'a> Button<'a> {
             size,
             pressed: false, 
             hover: false, 
-            texture: tex 
+            texture: tex, 
+            visible: true
         }
     }
     
     fn run(&mut self, input: Inputs) {
+        
+        if !self.visible { return () }
         
         let xlb = self.pos.0;
         let ylb = self.pos.1;
@@ -40,7 +45,9 @@ impl<'a> Button<'a> {
         } 
     }
     
-    fn draw(&self) {
+    fn draw(&self, renderer: Renderer) {
+        
+        if !self.visible { return () }
         
     }
 }

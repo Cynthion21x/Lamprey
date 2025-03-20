@@ -1,5 +1,6 @@
 use sdl2::{keyboard::Keycode, EventPump, event::Event};
 use crate::{content::sprite::SpriteMan, rendering::{self, renderer::Renderer}};
+use crate::ui::buttons;
 
 pub enum State {
     MainMenu,
@@ -73,8 +74,7 @@ impl<'a> Game<'a> {
         
         self.renderer.clear();
         
-        let grass = self.sprites.sprite_from_string("grass").unwrap();
-        self.renderer.draw((0, 0), (500, 500), grass);
+        
         
         self.renderer.present();
         

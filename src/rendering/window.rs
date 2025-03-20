@@ -9,7 +9,7 @@ impl WindowM {
     
     pub fn new(video_subsystem: &VideoSubsystem) -> Self {
         
-        let win = video_subsystem.window(config::TITLE, config::GAME_WIDTH, config::GAME_HEIGHT)
+        let win = video_subsystem.window(config::TITLE, config::WIN_WIDTH, config::WIN_HEIGHT)
             .position_centered()
             .resizable()
             .build()
@@ -25,7 +25,7 @@ impl WindowM {
         
     }
     
-    pub fn get_win_size(&self) -> (u32, u32) {
+    pub fn win_size(&self) -> (u32, u32) {
         self.canvas.window().size()
-    }    
+    }
 }
