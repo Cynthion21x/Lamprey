@@ -1,3 +1,3 @@
 pub mod town;
-pub mod game;
+pub mod game_scene;
 pub mod main_menu;

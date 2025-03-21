@@ -4,6 +4,7 @@ use crate::content::asset::AssetMan;
 use crate::game::Inputs;
 use crate::rendering::renderer::{self, Renderer};
 use crate::utils;
+use crate::game;
 
 pub struct Button<'a> {
     pos: (u32, u32),
@@ -15,19 +16,19 @@ pub struct Button<'a> {
 }
 
 impl<'a> Button<'a> {
-    fn new(pos: (u32, u32), size: (u32, u32), sprite: &str, assetman: &'a AssetMan) -> Self {
-        let tex = assetman.sprite_from_string(sprite).expect("sprite not found");
+    pub fn new(pos: (u32, u32), size: (u32, u32), texture: &'a Texture<'a>) -> Self {
+        
         Self { 
             pos,
             size,
             pressed: false, 
             hover: false, 
-            texture: tex, 
+            texture,
             visible: true
         }
     }
     
-    fn run(&mut self, input: Inputs) {
+    pub fn run(&mut self, input: &Inputs) {
         
         if !self.visible { return () }
         
@@ -41,13 +42,16 @@ impl<'a> Button<'a> {
         }
         
         if self.hover && input.mouse_pressed  {
-            self.pressed = true
+            self.pressed = true;
+            println!("pressed bozo");
         } 
     }
     
-    fn draw(&self, renderer: Renderer) {
+    pub fn draw(&self, renderer: &mut Renderer) {
         
         if !self.visible { return () }
+        
+        renderer.draw_gui(self.pos, self.size, self.texture);
         
     }
 }

@@ -18,7 +18,6 @@ impl<'a> AssetMan<'a> {
     pub fn new(tex_loader: &'a TextureCreator<WindowContext>) -> Self {
         
         let mut sprites = Vec::new();
-        let mut fonts = Vec::new();
         
         let paths = fs::read_dir(config::ASSET_PATH)
             .expect("Where did all my assets go :(");

@@ -1,7 +1,8 @@
-use sdl2::{render::Texture, pixels::Color, rect};
+use sdl2::rect;
+use sdl2::{render::Texture, pixels::Color, rect::Rect};
 use crate::config::{GAME_HEIGHT, TILE_SIZE};
 use crate::rendering::window; 
-use crate::content::asset;
+use crate::content::{asset, letterpos};
 use crate::utils::in_range;
 
 use super::window::WindowM;
@@ -51,8 +52,29 @@ impl Renderer {
         
     }
 
-    pub fn draw_font(&mut self, pos: (u32, u32), size: u32) {
-
+    pub fn read_sheet(pos: (i32, i32)) -> Rect {
+        
+        rect::Rect::new(pos.0 * 7 + 1, pos.1 * 9 + 1, 7, 9)     
+        
+    }
+    
+    pub fn draw_font(&mut self, pos: (u32, u32), size: u32,  text: &str, sheet: &Texture) {
+        
+        let mut a = 1;
+        let actsize = (size * 7 / 9, size);
+        
+        
+        for i in text.chars() {
+            
+            let letter = letterpos::letterpos(&i);
+            let posit = Rect::new((pos.0 + a * actsize.0) as i32, (pos.1) as i32, actsize.0, actsize.1);
+            
+            self.window.canvas.copy(sheet, letter, posit).expect("draw_font problems");
+            
+            a = a + 1
+        }
+        
+        
     }
 
     
