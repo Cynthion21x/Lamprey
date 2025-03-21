@@ -54,6 +54,7 @@ impl Renderer {
     pub fn draw_font(&mut self, pos: (u32, u32), size: u32) {
 
     }
+
     
     pub fn clear(&mut self) {
         self.window.canvas.set_draw_color(Color::RGB(0, 0, 0));
