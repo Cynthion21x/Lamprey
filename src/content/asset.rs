@@ -1,7 +1,6 @@
 use sdl2::image::LoadTexture;
 use sdl2::render::{Texture, TextureCreator, Canvas};
 use sdl2::video::{Window, WindowContext};
-use sdl2::ttf::{Font, Sdl2TtfContext};
 use sdl2::sys::LockMask;
 use sdl2::Error;
 use std::ffi::OsStr;
@@ -11,14 +10,12 @@ use crate::config;
 
 pub struct AssetMan<'a> {
     pub texture_maker: &'a TextureCreator<WindowContext>,
-    pub font_maker: &'a Sdl2TtfContext,
     pub sprite: Vec<(Texture<'a>, String)>,
-    pub font: Vec<(Font<'a, 'a>, String)>
 }
 
 impl<'a> AssetMan<'a> {
     
-    pub fn new(tex_loader: &'a TextureCreator<WindowContext>, font_loader: &'a Sdl2TtfContext) -> Self {
+    pub fn new(tex_loader: &'a TextureCreator<WindowContext>) -> Self {
         
         let mut sprites = Vec::new();
         let mut fonts = Vec::new();
@@ -48,20 +45,6 @@ impl<'a> AssetMan<'a> {
                     }
                 },
 
-                "ttf" => {
-                    
-                    if let Ok(font) = font_loader.load_font(location, 128) {
-
-                        let file_name: String = name
-                            .to_str()
-                            .unwrap()
-                            .into();
-
-                        fonts.push((font, file_name));
-
-                    }
-                },
-
                 _ => { }
 
             }
@@ -69,9 +52,7 @@ impl<'a> AssetMan<'a> {
         
         Self { 
             texture_maker: tex_loader,
-            font_maker: font_loader,
             sprite: sprites,
-            font: fonts,
         }
         
     }
@@ -87,7 +68,6 @@ impl<'a> AssetMan<'a> {
 
     pub fn drop(&mut self) {
         
-        self.font.clear();
         self.sprite.clear();
 
     }

@@ -1,4 +1,4 @@
-use sdl2::{render::Texture, pixels::Color, rect, ttf::Font};
+use sdl2::{render::Texture, pixels::Color, rect};
 use crate::config::{GAME_HEIGHT, TILE_SIZE};
 use crate::rendering::window; 
 use crate::content::asset;
@@ -51,7 +51,7 @@ impl Renderer {
         
     }
 
-    pub fn draw_font(&mut self, pos: (u32, u32), size: u32, font: &Font) {
+    pub fn draw_font(&mut self, pos: (u32, u32), size: u32) {
 
     }
     
