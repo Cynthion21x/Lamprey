@@ -39,7 +39,7 @@ impl<'a> Game<'a> {
             key_pressed: None,
         };
 
-        let main_menu = scenes::main_menu::MainMenu::new(&assets, &renderer);
+        let main_menu = scenes::main_menu::MainMenu::new(&assets, renderer.window.win_size());
         let town = scenes::town::Town::new();
         let game = scenes::game_scene::Game::new();
 

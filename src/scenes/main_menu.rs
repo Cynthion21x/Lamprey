@@ -6,9 +6,7 @@ pub struct MainMenu<'a> {
 
 impl<'a> MainMenu<'a> {
 
-    pub fn new(assets: &'a AssetMan, renderer: &'a Renderer) -> Self {
-        
-        let windowSize = renderer.window.win_size();
+    pub fn new(assets: &'a AssetMan, windowSize: (u32, u32)) -> Self {
         
         let playbutton = buttons::Button::new((300, 300), (50,20), assets.sprite_from_string("play").unwrap());
         

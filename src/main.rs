@@ -18,9 +18,9 @@ fn main() -> Result<(), String> {
     let window_m = window::WindowM::new(&video_subsystem);
     let texture_maker = window_m.canvas.texture_creator();
     let assets = asset::AssetMan::new(&texture_maker);
-    let renderer = renderer::Renderer::new(window_m);
+    let mut renderer = renderer::Renderer::new(window_m);
 
-    let mut core = game::Game::new(event_pump, &assets, renderer);
+    let mut core = game::Game::new(event_pump, &assets, &mut renderer);
 
     while core.running {
         core.input();
