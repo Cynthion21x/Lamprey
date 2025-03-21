@@ -50,7 +50,7 @@ impl<'a> AssetMan<'a> {
 
                 "ttf" => {
                     
-                    if let Ok(font) = font_loader.load_font(location, 128) {
+                    if let Ok(font) = font_loader.load_font(location, 16) {
 
                         let file_name: String = name
                             .to_str()

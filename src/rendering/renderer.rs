@@ -52,7 +52,7 @@ impl Renderer {
     }
 
     pub fn draw_font(&mut self, pos: (u32, u32), size: u32, font: &Font) {
-
+        
     }
     
     pub fn clear(&mut self) {
