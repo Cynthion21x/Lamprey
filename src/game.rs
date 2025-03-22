@@ -39,7 +39,7 @@ impl<'a> Game<'a> {
             key_pressed: None,
         };
 
-        let main_menu = scenes::main_menu::MainMenu::new(&assets, renderer.window.win_size());
+        let main_menu = scenes::main_menu::MainMenu::new(&assets);
         let town = scenes::town::Town::new();
         let game = scenes::game_scene::Game::new();
 
@@ -75,8 +75,10 @@ impl<'a> Game<'a> {
             return;
         };
 
+        self.renderer.calcScalar();
+
         match self.state {
-            State::MainMenu => self.main_menu.update(&self.input),
+            State::MainMenu => self.main_menu.update(&self.input, self.renderer.window.win_size(), self.renderer.scalar),
             State::Game => self.game.update(&self),
             State::Town => self.town.update(&self),
         }

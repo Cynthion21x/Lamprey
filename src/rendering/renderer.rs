@@ -30,6 +30,11 @@ impl Renderer {
         
         
     }
+
+    pub fn calcScalar(&mut self) {
+        self.unitsize = self.window.win_size().1 / GAME_HEIGHT;
+        self.scalar = self.unitsize / TILE_SIZE; 
+    }
     
     pub fn draw(&mut self, pos: (u32, u32), size: (u32, u32), sprite: &Texture) {
         
