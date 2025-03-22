@@ -16,6 +16,7 @@ impl WindowM {
             .expect("Failed to build window");
         
         let canvas = win.into_canvas()
+            .present_vsync()
             .build()
             .expect("No canvas :c");
         
