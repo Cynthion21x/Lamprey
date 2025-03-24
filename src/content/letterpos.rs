@@ -1,5 +1,4 @@
 use sdl2::rect::Rect;
-use std::char::from_u32;
 
 const ABCD: char = char::from_u32(27).unwrap();
 const BACKSLASH: char = char::from_u32(92).unwrap();

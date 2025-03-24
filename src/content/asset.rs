@@ -1,11 +1,8 @@
 use sdl2::image::LoadTexture;
-use sdl2::render::{Texture, TextureCreator, Canvas};
-use sdl2::video::{Window, WindowContext};
-use sdl2::sys::LockMask;
-use sdl2::Error;
+use sdl2::render::{Texture, TextureCreator};
+use sdl2::video::WindowContext;
 use std::ffi::OsStr;
-use std::{fs, env};
-use std::fmt::Display;
+use std::fs;
 use crate::config;
 
 pub struct AssetMan<'a> {

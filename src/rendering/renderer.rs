@@ -2,8 +2,8 @@ use sdl2::rect;
 use sdl2::{render::Texture, pixels::Color, rect::Rect};
 use crate::config::{GAME_HEIGHT, TILE_SIZE};
 use crate::rendering::window; 
-use crate::content::{asset, letterpos};
-use crate::utils::in_range;
+use crate::content::letterpos;
+use crate::utils::{self, in_range};
 
 use super::window::WindowM;
 
@@ -11,7 +11,7 @@ pub struct Renderer {
     pub window: window::WindowM,
     pub camera_pos: (u32, u32),
     pub unitsize: u32,
-    pub scalar: u32,
+    pub scalar: f32,
 }
 
 impl Renderer {
@@ -20,7 +20,7 @@ impl Renderer {
         
         let camera_pos = (0, 0);
         let unitsize = windowm.win_size().1 / GAME_HEIGHT;
-        let scalar = unitsize / TILE_SIZE;
+        let scalar = (unitsize / TILE_SIZE) as f32;
         Self{ 
             window: windowm,
             camera_pos,
@@ -31,9 +31,9 @@ impl Renderer {
         
     }
 
-    pub fn calcScalar(&mut self) {
+    pub fn calc_scalar(&mut self) {
         self.unitsize = self.window.win_size().1 / GAME_HEIGHT;
-        self.scalar = self.unitsize / TILE_SIZE; 
+        self.scalar = (self.unitsize / TILE_SIZE) as f32; 
     }
     
     pub fn draw(&mut self, pos: (u32, u32), size: (u32, u32), sprite: &Texture) {
@@ -41,7 +41,17 @@ impl Renderer {
         if in_range(pos.0, self.camera_pos.0 - size.0, self.camera_pos.0 + self.window.win_size().0)
         && in_range(pos.1, self.camera_pos.1 - size.1, self.camera_pos.1 + self.window.win_size().1) {
             let screenpos = (pos.0 - self.camera_pos.0, pos.1 - self.camera_pos.1);         
-            let location = rect::Rect::new(screenpos.0 as i32, screenpos.1 as i32, size.0, size.1);
+            let mut location = rect::Rect::new(screenpos.0 as i32, screenpos.1 as i32, size.0, size.1);
+            
+            
+            if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
+                let offset = (self.window.win_size().0 - self.window.game_win_size().0) / 2;
+                location.x = location.x + offset as i32
+            } else {
+                let offset = (self.window.win_size().1 - self.window.game_win_size().1) / 2; 
+                location.y = location.y + offset as i32 
+            }
+                      
             self.window.canvas
                 .copy(sprite, None, location)
                 .expect("Get better at drawing bozo");
@@ -50,7 +60,16 @@ impl Renderer {
     
     pub fn draw_gui(&mut self, pos: (u32, u32), size: (u32, u32), sprite: &Texture) {
         
-        let location = rect::Rect::new(pos.0 as i32, pos.1 as i32, size.0, size.1);
+        let mut location = rect::Rect::new(pos.0 as i32, pos.1 as i32, size.0, size.1);
+        
+        if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
+            let offset = (self.window.win_size().0 - self.window.game_win_size().0) / 2;
+            location.x = location.x + offset as i32
+        } else {
+            let offset = (self.window.win_size().1 - self.window.game_win_size().1) / 2; 
+            location.y = location.y + offset as i32 
+        }
+        
         self.window.canvas
             .copy(sprite, None, location)
             .expect("Get better at drawing gui bozo");
@@ -65,16 +84,24 @@ impl Renderer {
     
     pub fn draw_font(&mut self, pos: (u32, u32), size: u32,  text: &str, sheet: &Texture) {
         
-        let mut a = 1;
-        let actsize = (size * 7 / 9, size);
+        let mut a = 0;
+        let actsize = ((size as f32 * 7.0 / 9.0) as u32, size);
         
         
         for i in text.chars() {
             
             let letter = letterpos::letterpos(&i);
-            let posit = Rect::new((pos.0 + a * actsize.0) as i32, (pos.1) as i32, actsize.0, actsize.1);
+            let mut pos = Rect::new((pos.0 + a * actsize.0) as i32, (pos.1) as i32, actsize.0, actsize.1);
             
-            self.window.canvas.copy(sheet, letter, posit).expect("draw_font problems");
+            if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
+                let offset = (self.window.win_size().0 - self.window.game_win_size().0) / 2;
+                pos.x = pos.x + offset as i32
+            } else {
+                let offset = (self.window.win_size().1 - self.window.game_win_size().1) / 2; 
+                pos.y = pos.y + offset as i32 
+            }
+            
+            self.window.canvas.copy(sheet, letter, pos).expect("draw_font problems");
             
             a = a + 1
         }

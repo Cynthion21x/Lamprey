@@ -1,18 +1,16 @@
 use sdl2::render::Texture;
-use std::any::Any;
-use crate::content::asset::AssetMan;
 use crate::game::Inputs;
-use crate::rendering::renderer::{self, Renderer};
+use crate::rendering::renderer::Renderer;
 use crate::utils;
-use crate::game;
 
 pub struct Button<'a> {
-    pos: (u32, u32),
-    size: (u32, u32),
-    pressed: bool,
-    hover: bool,
-    texture: &'a Texture<'a>,
-    visible: bool,
+    pub pos: (u32, u32),
+    pub size: (u32, u32),
+    pub pressed: bool,
+    pub released: bool,
+    pub hover: bool,
+    pub texture: &'a Texture<'a>,
+    pub visible: bool,
 }
 
 impl<'a> Button<'a> {
@@ -22,6 +20,7 @@ impl<'a> Button<'a> {
             pos,
             size,
             pressed: false, 
+            released: false,
             hover: false, 
             texture,
             visible: true
@@ -38,13 +37,19 @@ impl<'a> Button<'a> {
         let yb = ylb + self.size.1;
         
         if utils::in_range(input.mouse_pos.0, xlb, xb) && utils::in_range(input.mouse_pos.1, ylb, yb){
-            self.hover = true;
+            self.hover = true
+        } else {
+            self.hover = false
         }
         
         if self.hover && input.mouse_pressed  {
-            self.pressed = true;
-            println!("pressed bozo");
+            self.pressed = true
         } 
+        
+        if self.pressed && !input.mouse_pressed {
+            self.released = true;
+            self.pressed = false
+        }
     }
     
     pub fn draw(&self, renderer: &mut Renderer) {
@@ -54,4 +59,24 @@ impl<'a> Button<'a> {
         renderer.draw_gui(self.pos, self.size, self.texture);
         
     }
+    
+    pub fn draw_text(&self, text: &str, sheet: &Texture, renderer: &mut Renderer) {
+        
+        self.draw(renderer);
+        let size = self.size.1 - (12.0 * renderer.scalar) as u32;
+        
+        let pos; 
+        
+        if self.pressed {
+            pos = utils::tuple_add(self.pos, ((self.size.0 - (size * 26 / 9)) / 2, (4.0 * renderer.scalar) as u32));
+        } else {
+            pos = utils::tuple_add(self.pos, ((self.size.0 - (size * 26 / 9)) / 2, (3.0 * renderer.scalar) as u32));
+        }
+        
+        renderer.draw_font(pos, size, text, sheet); 
+        
+    }
+    
 }
+
+

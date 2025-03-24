@@ -7,7 +7,6 @@ pub mod utils;
 use content::asset;
 use rendering::{renderer, window};
 mod game;
-use sdl2::{event::Event, keyboard::Keycode, pixels::Color};
 
 fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;

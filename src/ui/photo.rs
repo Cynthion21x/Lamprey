@@ -1,10 +1,5 @@
 use sdl2::render::Texture;
-use std::any::Any;
-use crate::content::asset::AssetMan;
-use crate::game::Inputs;
-use crate::rendering::renderer::{self, Renderer};
-use crate::utils;
-use crate::game;
+use crate::rendering::renderer::Renderer;
 
 pub struct Photo<'a> {
     pub pos: (u32, u32),

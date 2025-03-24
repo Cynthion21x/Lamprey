@@ -29,4 +29,16 @@ impl WindowM {
     pub fn win_size(&self) -> (u32, u32) {
         self.canvas.window().size()
     }
+    
+    pub fn game_win_size(&self) -> (u32, u32) {
+        
+        let windowsize = self.win_size();
+        
+        if windowsize.0 > windowsize.1 * 16 / 9 {
+            (windowsize.1 * 256 / 144, windowsize.1)
+        } else {
+            (windowsize.0, windowsize.0 * 144 / 256)           
+        }
+        
+    }
 }

@@ -1,11 +1,11 @@
 use crate::scenes;
-use crate::ui::buttons;
 use crate::{
     content::asset::AssetMan,
-    rendering::{self, renderer::Renderer},
+    rendering::renderer::Renderer,
 };
-use sdl2::{EventPump, event::Event, keyboard::Keycode, libc::scanf};
+use sdl2::{EventPump, event::Event, keyboard::Keycode};
 
+#[derive(PartialEq)]
 pub enum State {
     MainMenu,
     Game,
@@ -57,14 +57,35 @@ impl<'a> Game<'a> {
     }
 
     pub fn input(&mut self) {
-        self.input.mouse_pressed = false;
         self.input.key_pressed = None;
         for event in self.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. } => self.running = false,
                 Event::KeyDown { keycode, .. } => self.input.key_pressed = Some(keycode).unwrap(),
                 Event::MouseButtonDown { .. } => self.input.mouse_pressed = true,
-                Event::MouseMotion { x, y, .. } => self.input.mouse_pos = (x as u32, y as u32),
+                Event::MouseButtonUp { .. } => self.input.mouse_pressed = false,
+                Event::MouseMotion { x, y, .. } =>  { 
+                    
+                    self.input.mouse_pos = (x as u32, y as u32);
+                    
+                    let mut xoffset = 0 as u32;
+                    let mut yoffset = 0 as u32;
+                     
+                    if self.renderer.window.win_size().0 > self.renderer.window.win_size().1 * 16 / 9 {
+                        xoffset = (self.renderer.window.win_size().0 - self.renderer.window.game_win_size().0) / 2;
+                    } else {
+                        yoffset = (self.renderer.window.win_size().1 - self.renderer.window.game_win_size().1) / 2; 
+                    }
+                    
+                    if xoffset < x as u32 {
+                    self.input.mouse_pos.0 = self.input.mouse_pos.0 - xoffset;
+                    }
+                    
+                    if yoffset < y as u32 {
+                    self.input.mouse_pos.1 = self.input.mouse_pos.1 - yoffset;
+                    }
+                    
+                },
                 _ => {}
             }
         }
@@ -75,10 +96,10 @@ impl<'a> Game<'a> {
             return;
         };
 
-        self.renderer.calcScalar();
+        self.renderer.calc_scalar();
 
         match self.state {
-            State::MainMenu => self.main_menu.update(&self.input, self.renderer.window.win_size(), self.renderer.scalar),
+            State::MainMenu => self.main_menu.update(&self.input, self.renderer.window.game_win_size(), self.renderer.scalar),
             State::Game => self.game.update(&self),
             State::Town => self.town.update(&self),
         }
@@ -92,7 +113,12 @@ impl<'a> Game<'a> {
         self.renderer.clear();
 
         match self.state {
-            State::MainMenu => self.main_menu.render(&mut self.renderer, &self.assets),
+            State::MainMenu => {
+                self.main_menu.render(&mut self.renderer, &self.assets);
+                if self.main_menu.new_state == State::Town{
+                    self.state = State::Town
+                }
+            },
             State::Game => self.game.render(&self),
             State::Town => self.town.render(&self),
         }
