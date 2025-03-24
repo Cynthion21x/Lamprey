@@ -11,6 +11,7 @@ pub struct Button<'a> {
     pub hover: bool,
     pub texture: &'a Texture<'a>,
     pub visible: bool,
+    pub centered: bool
 }
 
 impl<'a> Button<'a> {
@@ -23,7 +24,8 @@ impl<'a> Button<'a> {
             released: false,
             hover: false, 
             texture,
-            visible: true
+            visible: true,
+            centered: false
         }
     }
     
@@ -62,15 +64,27 @@ impl<'a> Button<'a> {
     
     pub fn draw_text(&self, text: &str, sheet: &Texture, renderer: &mut Renderer) {
         
-        self.draw(renderer);
         let size = self.size.1 - (12.0 * renderer.scalar) as u32;
         
         let pos; 
+        let length = text.chars()
+                         .count()
+                         as u32;
         
         if self.pressed {
-            pos = utils::tuple_add(self.pos, ((self.size.0 - (size * 26 / 9)) / 2, (4.0 * renderer.scalar) as u32));
+
+            pos = utils::tuple_add(
+                self.pos,
+                ((self.size.0 - (size * ((length * 7) - 2) / 9)) / 2, (9.0 * renderer.scalar) as u32)
+            );
+
         } else {
-            pos = utils::tuple_add(self.pos, ((self.size.0 - (size * 26 / 9)) / 2, (3.0 * renderer.scalar) as u32));
+
+            pos = utils::tuple_add(
+                self.pos,
+                ((self.size.0 - (size * ((length * 7) - 2) / 9)) / 2, (4.0 * renderer.scalar) as u32)
+            );
+
         }
         
         renderer.draw_font(pos, size, text, sheet); 

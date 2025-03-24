@@ -10,7 +10,6 @@ use super::window::WindowM;
 pub struct Renderer {
     pub window: window::WindowM,
     pub camera_pos: (u32, u32),
-    pub unitsize: u32,
     pub scalar: f32,
 }
 
@@ -24,7 +23,6 @@ impl Renderer {
         Self{ 
             window: windowm,
             camera_pos,
-            unitsize,
             scalar,
         }
         
@@ -32,8 +30,17 @@ impl Renderer {
     }
 
     pub fn calc_scalar(&mut self) {
-        self.unitsize = self.window.win_size().1 / GAME_HEIGHT;
-        self.scalar = (self.unitsize / TILE_SIZE) as f32; 
+        
+        if self.window.win_size().0 < self.window.win_size().1 * 16 / 9 {
+
+            self.scalar = (self.window.win_size().0 as f32 / (256.0 * 2.0));
+
+        } else {
+
+            self.scalar = (self.window.win_size().1 as f32 / (144.0 * 2.0));
+
+        }
+
     }
     
     pub fn draw(&mut self, pos: (u32, u32), size: (u32, u32), sprite: &Texture) {

@@ -1,6 +1,6 @@
 use sdl2::sys::WINT_MAX;
 
-use crate::{content::asset::AssetMan, game::{Inputs, State}, rendering::renderer::{self, Renderer}, ui, utils};
+use crate::{content::asset::AssetMan, game::{Inputs, State}, rendering::renderer::{self, Renderer}, ui, utils, utils::center_x, utils::tuple_add};
 
 pub struct MainMenu<'a> {
     play_button: ui::buttons::Button<'a>,
@@ -8,7 +8,6 @@ pub struct MainMenu<'a> {
     title: ui::photo::Photo<'a>,
     background: ui::photo::Photo<'a>,
     pub new_state: State,
-    click: u32
 }
 
 impl<'a> MainMenu<'a> {
@@ -28,28 +27,35 @@ impl<'a> MainMenu<'a> {
             title,
             background,
             new_state: State::MainMenu,
-            click: 0
         }
     }
 
     pub fn update(&mut self, input: &Inputs, windowsize: (u32, u32), scalar: f32) {
         
-        self.play_button.run(input);
+
         self.title.size = ((223.0 * scalar) as u32, (22.0 * scalar) as u32);
-        self.title.pos = ((windowsize.0 - self.title.size.0) / 2, self.title.size.1);
+        self.title.pos = center_x(self.title.size, windowsize, 
+                                         self.title.size.1);
         
         self.play_button.size = ((38.0 * scalar * 2.0) as u32, (15.0 * scalar * 2.0) as u32);
-        self.play_button.pos = ((windowsize.0 - self.play_button.size.0) / 2, windowsize.1 / 3);
+        self.play_button.pos = center_x(self.play_button.size, windowsize,
+                                               windowsize.1 / 3);
         
         self.play_button_down.size = ((38.0 * scalar * 2.0) as u32, (12.0 * scalar * 2.0) as u32);
-        self.click = self.play_button.size.1 - self.play_button_down.size.1;
-        self.play_button_down.pos = ((windowsize.0 - self.play_button.size.0) / 2, windowsize.1 / 3 + self.click);
+
+        let click = self.play_button.size.1 - self.play_button_down.size.1;
+
+        self.play_button_down.pos = tuple_add(self.play_button.pos, (0, (6.0 * scalar) as u32));
         
         if windowsize.0 > windowsize.1 * 16 / 9 {
             self.background.size = (windowsize.1 * 256 / 144, windowsize.1);
         } else {
             self.background.size = (windowsize.0, windowsize.0 * 144 / 256);            
         }
+
+        self.play_button.run(input);
+
+
         if self.play_button.released {
             //self.new_state = State::Town
         }
