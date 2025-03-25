@@ -4,6 +4,7 @@ use crate::{
     rendering::renderer::Renderer,
     config
 };
+use sdl2::video::FullscreenType;
 use sdl2::{EventPump, event::Event, keyboard::Keycode};
 
 #[derive(PartialEq)]
@@ -123,7 +124,8 @@ impl<'a> Game<'a> {
             State::Game => self.game.update(&self),
             State::Town => self.town.update(&self),
             State::Quit => {
-                if self.renderer.window.win_size().0 >= 202 || self.renderer.window.win_size().1 >= 100 {
+                if self.renderer.window.win_size().0 >= 202 && self.renderer.window.win_size().1 >= 100 
+                && self.renderer.window.canvas.window().fullscreen_state() == FullscreenType::Off{
                     self.renderer.window.resize(
                         (self.renderer.window.win_size().0 - 10, self.renderer.window.win_size().1 - 10)
                     );
