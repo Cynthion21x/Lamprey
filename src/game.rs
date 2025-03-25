@@ -124,10 +124,11 @@ impl<'a> Game<'a> {
             State::Game => self.game.update(&self),
             State::Town => self.town.update(&self),
             State::Quit => {
-                if self.renderer.window.win_size().0 >= 202 && self.renderer.window.win_size().1 >= 100 
-                && self.renderer.window.canvas.window().fullscreen_state() == FullscreenType::Off{
+                self.renderer.window.canvas.window_mut().set_bordered(false);
+                if self.renderer.window.win_size().0 >= 20 && self.renderer.window.win_size().1 >= 100 
+                && !self.renderer.window.canvas.window().is_maximized()  {
                     self.renderer.window.resize(
-                        (self.renderer.window.win_size().0 - 10, self.renderer.window.win_size().1 - 10)
+                        (self.renderer.window.win_size().0 - 25, self.renderer.window.win_size().1 - 25)
                     );
                     println!("{}", self.renderer.window.win_size().0)
                 } else {
