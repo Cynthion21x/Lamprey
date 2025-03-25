@@ -104,6 +104,12 @@ impl<'a> Game<'a> {
         println!("delta time {}", time);
 
         self.renderer.calc_scalar();
+        
+        if self.clock < 1000 / config::FPS {
+            return;
+        } else {
+            self.clock = 0
+        }
 
         match self.state {
             State::MainMenu => {
@@ -117,12 +123,13 @@ impl<'a> Game<'a> {
             State::Game => self.game.update(&self),
             State::Town => self.town.update(&self),
             State::Quit => {
-                if self.renderer.window.win_size().0 <= 5 || self.renderer.window.win_size().0 <= 5 {
+                if self.renderer.window.win_size().0 >= 202 || self.renderer.window.win_size().1 >= 100 {
                     self.renderer.window.resize(
-                        (self.renderer.window.win_size().0 - 1, self.renderer.window.win_size().1 - 1)
+                        (self.renderer.window.win_size().0 - 10, self.renderer.window.win_size().1 - 10)
                     );
+                    println!("{}", self.renderer.window.win_size().0)
                 } else {
-                    //self.running = false
+                    self.running = false
                 }   
             }
         }

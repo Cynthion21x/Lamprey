@@ -7,4 +7,4 @@ pub const TILE_SIZE: u32 = 16;
 pub const TITLE: &str = "Lamprey";
 pub const ASSET_PATH: &str = "./assets/";
 
-pub const FPS: u128 = 60;
+pub const FPS: u128 = 144;
