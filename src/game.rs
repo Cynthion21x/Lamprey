@@ -2,6 +2,7 @@ use crate::scenes;
 use crate::{
     content::asset::AssetMan,
     rendering::renderer::Renderer,
+    config
 };
 use sdl2::{EventPump, event::Event, keyboard::Keycode};
 
@@ -10,6 +11,7 @@ pub enum State {
     MainMenu,
     Game,
     Town,
+    Quit
 }
 
 pub struct Inputs {
@@ -29,6 +31,7 @@ pub struct Game<'a> {
     main_menu: scenes::main_menu::MainMenu<'a>,
     town: scenes::town::Town,
     game: scenes::game_scene::Game,
+    clock: u128,
 }
 
 impl<'a> Game<'a> {
@@ -53,6 +56,7 @@ impl<'a> Game<'a> {
             main_menu,
             town,
             game,
+            clock: 1000 / config::FPS
         }
     }
 
@@ -91,17 +95,36 @@ impl<'a> Game<'a> {
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, time: u128) {
         if !self.running {
             return;
         };
+        
+        self.clock = self.clock + time;
+        println!("delta time {}", time);
 
         self.renderer.calc_scalar();
 
         match self.state {
-            State::MainMenu => self.main_menu.update(&self.input, self.renderer.window.game_win_size(), self.renderer.scalar),
+            State::MainMenu => {
+                self.main_menu.update(&self.input, self.renderer.window.game_win_size(), self.renderer.scalar);
+                if self.main_menu.new_state == State::Town{
+                    self.state = State::Town
+                } else if self.main_menu.new_state == State::Quit {
+                    self.state = State::Quit
+                }
+            },
             State::Game => self.game.update(&self),
             State::Town => self.town.update(&self),
+            State::Quit => {
+                if self.renderer.window.win_size().0 <= 5 || self.renderer.window.win_size().0 <= 5 {
+                    self.renderer.window.resize(
+                        (self.renderer.window.win_size().0 - 1, self.renderer.window.win_size().1 - 1)
+                    );
+                } else {
+                    //self.running = false
+                }   
+            }
         }
     }
 
@@ -113,14 +136,10 @@ impl<'a> Game<'a> {
         self.renderer.clear();
 
         match self.state {
-            State::MainMenu => {
-                self.main_menu.render(&mut self.renderer, &self.assets);
-                if self.main_menu.new_state == State::Town{
-                    self.state = State::Town
-                }
-            },
+            State::MainMenu => self.main_menu.render(&mut self.renderer, &self.assets),
             State::Game => self.game.render(&self),
             State::Town => self.town.render(&self),
+            _ => {}
         }
 
         self.renderer.present();

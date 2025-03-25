@@ -7,8 +7,12 @@ pub mod utils;
 use content::asset;
 use rendering::{renderer, window};
 mod game;
+use std::time::{self, Instant};
 
 fn main() -> Result<(), String> {
+    
+    let mut deltaTime: u128 = 0;
+    
     let sdl_context = sdl2::init()?;
 
     let video_subsystem = sdl_context.video()?;
@@ -22,9 +26,16 @@ fn main() -> Result<(), String> {
     let mut core = game::Game::new(event_pump, &assets, &mut renderer);
 
     while core.running {
+        
+        let now = Instant::now();
+        
         core.input();
-        core.update();
+        core.update(deltaTime);
         core.render();
+        
+        let time_elapsed = now.elapsed();
+        deltaTime = time_elapsed.as_millis();
+        
     }
 
     Ok(())

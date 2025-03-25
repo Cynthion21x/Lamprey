@@ -15,11 +15,11 @@ pub struct Button<'a> {
 }
 
 impl<'a> Button<'a> {
-    pub fn new(pos: (u32, u32), size: (u32, u32), texture: &'a Texture<'a>) -> Self {
+    pub fn new(texture: &'a Texture<'a>) -> Self {
         
         Self { 
-            pos,
-            size,
+            pos: (0, 0),
+            size: (0, 0),
             pressed: false, 
             released: false,
             hover: false, 

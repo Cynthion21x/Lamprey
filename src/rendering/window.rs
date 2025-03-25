@@ -16,7 +16,6 @@ impl WindowM {
             .expect("Failed to build window");
         
         let canvas = win.into_canvas()
-            .present_vsync()
             .build()
             .expect("No canvas :c");
         
@@ -40,5 +39,9 @@ impl WindowM {
             (windowsize.0, windowsize.0 * 144 / 256)           
         }
         
+    }
+    
+    pub fn resize(&mut self, size: (u32, u32)) {
+        self.canvas.window_mut().set_size(size.0, size.1).unwrap()
     }
 }
