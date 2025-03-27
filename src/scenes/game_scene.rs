@@ -1,5 +1,3 @@
-use crate::game;
-
 pub struct Game {
 
 }
@@ -10,11 +8,11 @@ impl Game {
         Self { }
     }
 
-    pub fn update(&self, game: &game::Game) {
+    pub fn update(&self) {
 
     }
 
-    pub fn render(&self, game: &game::Game) {
+    pub fn render(&self) {
 
     }
 

@@ -1,15 +1,17 @@
 use sdl2::rect;
 use sdl2::{render::Texture, pixels::Color, rect::Rect};
-use crate::config::{GAME_HEIGHT, TILE_SIZE};
-use crate::rendering::window; 
-use crate::content::letterpos;
-use crate::utils::{self, in_range};
+use crate::{
+    content::letterpos, 
+    rendering::window,
+    utils::*,
+    config::{GAME_HEIGHT, TILE_SIZE},
+}; 
 
 use super::window::WindowM;
 
 pub struct Renderer {
     pub window: window::WindowM,
-    pub camera_pos: (u32, u32),
+    pub camera_pos: (i32, i32),
     pub scalar: f32,
 }
 
@@ -33,11 +35,11 @@ impl Renderer {
         
         if self.window.win_size().0 < self.window.win_size().1 * 16 / 9 {
 
-            self.scalar = (self.window.win_size().0 as f32 / (256.0 * 2.0));
+            self.scalar = self.window.win_size().0 as f32 / (256.0 * 2.0);
 
         } else {
 
-            self.scalar = (self.window.win_size().1 as f32 / (144.0 * 2.0));
+            self.scalar = self.window.win_size().1 as f32 / (144.0 * 2.0);
 
         }
 
@@ -45,8 +47,11 @@ impl Renderer {
     
     pub fn draw(&mut self, pos: (u32, u32), size: (u32, u32), sprite: &Texture) {
         
-        if in_range(pos.0, self.camera_pos.0 - size.0, self.camera_pos.0 + self.window.win_size().0)
-        && in_range(pos.1, self.camera_pos.1 - size.1, self.camera_pos.1 + self.window.win_size().1) {
+        let pos = (pos.0 as i32, pos.1 as i32);
+        
+        if in_range_i32(pos.0, self.camera_pos.0 - size.0 as i32, self.camera_pos.0+ self.window.game_win_size().0 as i32)
+        && in_range_i32(pos.1, self.camera_pos.1 - size.1 as i32, self.camera_pos.1 + self.window.game_win_size().1 as i32) {
+            
             let screenpos = (pos.0 - self.camera_pos.0, pos.1 - self.camera_pos.1);         
             let mut location = rect::Rect::new(screenpos.0 as i32, screenpos.1 as i32, size.0, size.1);
             

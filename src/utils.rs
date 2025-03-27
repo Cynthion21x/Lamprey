@@ -2,6 +2,10 @@ pub fn in_range(value: u32, lower: u32, upper: u32) -> bool {
     value > lower && value < upper
 }
 
+pub fn in_range_i32(value: i32, lower: i32, upper: i32) -> bool {
+    value > lower && value < upper
+}
+
 pub fn tuple_add(tuple: (u32, u32), tuple2: (u32, u32)) -> (u32, u32) {
     (tuple.0 + tuple2.0, tuple.1 + tuple2.1)
 }

@@ -4,14 +4,15 @@ pub mod rendering;
 pub mod scenes;
 pub mod ui;
 pub mod utils;
+pub mod objects;
 use content::asset;
 use rendering::{renderer, window};
 mod game;
-use std::time::{self, Instant};
+use std::time::Instant;
 
 fn main() -> Result<(), String> {
     
-    let mut deltaTime: u128 = 0;
+    let mut deltatime: u128 = 0;
     
     let sdl_context = sdl2::init()?;
 
@@ -30,11 +31,11 @@ fn main() -> Result<(), String> {
         let now = Instant::now();
         
         core.input();
-        core.update(deltaTime);
+        core.update(deltatime);
         core.render();
         
         let time_elapsed = now.elapsed();
-        deltaTime = time_elapsed.as_millis();
+        deltatime = time_elapsed.as_millis();
         
     }
 

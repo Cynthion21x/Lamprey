@@ -4,7 +4,6 @@ use crate::{
     rendering::renderer::Renderer,
     config
 };
-use sdl2::video::FullscreenType;
 use sdl2::{EventPump, event::Event, keyboard::Keycode};
 
 #[derive(PartialEq)]
@@ -30,7 +29,7 @@ pub struct Game<'a> {
     pub input: Inputs,
 
     main_menu: scenes::main_menu::MainMenu<'a>,
-    town: scenes::town::Town,
+    town: scenes::town::Town<'a>,
     game: scenes::game_scene::Game,
     clock: u128,
 }
@@ -44,7 +43,7 @@ impl<'a> Game<'a> {
         };
 
         let main_menu = scenes::main_menu::MainMenu::new(&assets);
-        let town = scenes::town::Town::new();
+        let town = scenes::town::Town::new(&assets);
         let game = scenes::game_scene::Game::new();
 
         Self {
@@ -102,7 +101,6 @@ impl<'a> Game<'a> {
         };
         
         self.clock = self.clock + time;
-        println!("delta time {}", time);
 
         self.renderer.calc_scalar();
         
@@ -121,8 +119,8 @@ impl<'a> Game<'a> {
                     self.state = State::Quit
                 }
             },
-            State::Game => self.game.update(&self),
-            State::Town => self.town.update(&self),
+            State::Game => self.game.update(),
+            State::Town => self.town.update(&self.input),
             State::Quit => {
                 self.renderer.window.canvas.window_mut().set_bordered(false);
                 if self.renderer.window.win_size().0 >= 20 && self.renderer.window.win_size().1 >= 100 
@@ -130,7 +128,6 @@ impl<'a> Game<'a> {
                     self.renderer.window.resize(
                         (self.renderer.window.win_size().0 - 25, self.renderer.window.win_size().1 - 25)
                     );
-                    println!("{}", self.renderer.window.win_size().0)
                 } else {
                     self.running = false
                 }   
@@ -147,8 +144,8 @@ impl<'a> Game<'a> {
 
         match self.state {
             State::MainMenu => self.main_menu.render(&mut self.renderer, &self.assets),
-            State::Game => self.game.render(&self),
-            State::Town => self.town.render(&self),
+            State::Game => self.game.render(),
+            State::Town => self.town.render(&mut self.renderer),
             _ => {}
         }
 
