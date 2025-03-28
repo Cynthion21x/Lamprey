@@ -18,6 +18,8 @@ pub struct Inputs {
     pub mouse_pos: (u32, u32),
     pub mouse_pressed: bool,
     pub key_pressed: Option<Keycode>,
+    pub key_up: Option<Keycode>,
+    pub key_held: Vec<Keycode>
 }
 
 pub struct Game<'a> {
@@ -31,7 +33,7 @@ pub struct Game<'a> {
     main_menu: scenes::main_menu::MainMenu<'a>,
     town: scenes::town::Town<'a>,
     game: scenes::game_scene::Game,
-    clock: u128,
+    clock: f32,
 }
 
 impl<'a> Game<'a> {
@@ -40,6 +42,8 @@ impl<'a> Game<'a> {
             mouse_pos: (0, 0),
             mouse_pressed: false,
             key_pressed: None,
+            key_held: vec![],
+            key_up: None
         };
 
         let main_menu = scenes::main_menu::MainMenu::new(&assets);
@@ -56,7 +60,7 @@ impl<'a> Game<'a> {
             main_menu,
             town,
             game,
-            clock: 1000 / config::FPS
+            clock: 1.0 / config::FPS
         }
     }
 
@@ -65,7 +69,18 @@ impl<'a> Game<'a> {
         for event in self.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. } => self.running = false,
-                Event::KeyDown { keycode, .. } => self.input.key_pressed = Some(keycode).unwrap(),
+                Event::KeyDown { keycode, .. } => {
+                    if !self.input.key_held.contains(&keycode.unwrap()) {
+                        self.input.key_held.push(keycode.unwrap());
+                    }
+                    self.input.key_pressed = Some(keycode).unwrap();
+                },
+                Event::KeyUp { keycode, .. } => {
+                    
+                    let index = self.input.key_held.iter().position(|x| *x == keycode.unwrap()).unwrap();
+                    self.input.key_held.remove(index);
+                    self.input.key_up = Some(keycode).unwrap()
+                }
                 Event::MouseButtonDown { .. } => self.input.mouse_pressed = true,
                 Event::MouseButtonUp { .. } => self.input.mouse_pressed = false,
                 Event::MouseMotion { x, y, .. } =>  { 
@@ -100,15 +115,16 @@ impl<'a> Game<'a> {
             return;
         };
         
+        let time = time as f32 / 1000.0;
+        
         self.clock = self.clock + time;
+        if self.clock >= 1.0 / config::FPS{
+            self.clock = 0.0
+        } else {
+            return;
+        }
 
         self.renderer.calc_scalar();
-        
-        if self.clock < 1000 / config::FPS {
-            return;
-        } else {
-            self.clock = 0
-        }
 
         match self.state {
             State::MainMenu => {
@@ -120,7 +136,7 @@ impl<'a> Game<'a> {
                 }
             },
             State::Game => self.game.update(),
-            State::Town => self.town.update(&self.input),
+            State::Town => self.town.update(&self.input, self.renderer.window.game_win_size(), time as f32),
             State::Quit => {
                 self.renderer.window.canvas.window_mut().set_bordered(false);
                 if self.renderer.window.win_size().0 >= 20 && self.renderer.window.win_size().1 >= 100 

@@ -47,7 +47,8 @@ impl Renderer {
     
     pub fn draw(&mut self, pos: (u32, u32), size: (u32, u32), sprite: &Texture) {
         
-        let pos = (pos.0 as i32, pos.1 as i32);
+        let pos = (((pos.0 as f32) * self.scalar) as i32, ((pos.1 as f32) * self.scalar) as i32);
+        let size = ((size.0 as f32 * self.scalar) as u32, (size.1 as f32 * self.scalar) as u32);
         
         if in_range_i32(pos.0, self.camera_pos.0 - size.0 as i32, self.camera_pos.0+ self.window.game_win_size().0 as i32)
         && in_range_i32(pos.1, self.camera_pos.1 - size.1 as i32, self.camera_pos.1 + self.window.game_win_size().1 as i32) {

@@ -7,7 +7,7 @@ use crate::{
 };
 
 pub struct Player<'a> {
-    pos: (u32, u32),
+    pos: (f32, f32),
     size: (u32, u32),
     sprite: &'a Texture<'a>,
     visible: bool,
@@ -15,7 +15,7 @@ pub struct Player<'a> {
 
 impl<'a> Player<'a> {
     
-    pub fn new(pos: (u32, u32), size: (u32, u32), sprite: &'a Texture<'a>) -> Self {
+    pub fn new(pos: (f32, f32), size: (u32, u32), sprite: &'a Texture<'a>) -> Self {
         Self{
             pos,
             size,
@@ -29,21 +29,23 @@ impl<'a> Player<'a> {
         if !self.visible { return () }
         
         let size = (self.size.0 * TILE_SIZE, self.size.1 * TILE_SIZE);
+        let pos = (self.pos.0 as u32, self.pos.1 as u32);
         
-        renderer.draw(self.pos, size, self.sprite);
+        renderer.draw(pos, size, self.sprite);
         
     }
     
-    pub fn movement(&mut self, input: &Inputs) {
+    pub fn movement(&mut self, input: &Inputs, time: f32) {
         
-        match input.key_pressed {
-            
-            Some(Keycode::A) => {
-                if self.pos.0 != 0 {
-                self.pos.0 = self.pos.0 - 1}
-            },
-            Some(Keycode::D) => self.pos.0 = self.pos.0  + 1,
-            _ => {}
+        for i in input.key_held.iter() {
+            match *i {              
+                Keycode::A => {
+                    if self.pos.0 >= 0.0 {
+                    self.pos.0 = self.pos.0 - 64.0 * time}
+                },
+                Keycode::D => self.pos.0 = self.pos.0 + 64.0 * time,
+                _ => {}
+            }
         }       
     }    
 }
