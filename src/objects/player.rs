@@ -55,16 +55,14 @@ impl<'a> Player<'a> {
         
         let map_pos = tuple_times(self.pos, 1.0 / 16.0);
         
-        if tilemap.tilemap[map_pos.1 as usize + 2][map_pos.0 as usize].tiletype == 1 {
-            
-            if collision((map_pos.0 * 16.0, (map_pos.1 + 3.0) * 16.0), (16, 16), self.pos, (16, 32)) {
-                println!("colliding");
-                self.velocity.1 = 0.0;
-                self.floating = false;
-                self.jumping = false;
-                self.pos.1 = map_pos.1 * 16.0 - 1.0
-            }          
-        }
+        if map_pos.1 + 3.0 < tilemap.tilemap.len() as f32 
+        && tilemap.tilemap[map_pos.1 as usize + 2][map_pos.0 as usize].tiletype == 1 
+        && collision((map_pos.0 * 16.0, (map_pos.1 + 3.0) * 16.0), (16, 16), self.pos, (16, 32)) {
+            self.velocity.1 = 0.0;
+            self.floating = false;
+            self.jumping = false;
+            self.pos.1 = map_pos.1 * 16.0 - 1.0             
+        } 
     }
     
     pub fn movement(&mut self, input: &Inputs, time: f32) {
@@ -80,12 +78,12 @@ impl<'a> Player<'a> {
         for i in input.key_held.iter() {
             match *i {              
                 Keycode::A => {
-                    if self.velocity.0 > - 128.0  {
+                    if self.velocity.0 > - 256.0 && self.pos.0 > 0.0 {
                         self.accelleration.0 = - 512.0
                     } 
                 },
                 Keycode::D => {
-                    if self.velocity.0 < 128.0 {
+                    if self.velocity.0 < 256.0 {
                         self.accelleration.0 = 512.0
                     }
                 },

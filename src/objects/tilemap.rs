@@ -11,7 +11,7 @@ pub struct Tile<'a> {
 }
 
 pub struct Tilemap<'a> {
-    pub tilemap: [[Tile<'a>; 200]; 100]
+    pub tilemap: [[Tile<'a>; 200]; 101]
 }
 
 impl<'a> Tilemap<'a> {
@@ -19,7 +19,7 @@ impl<'a> Tilemap<'a> {
     pub fn new() -> Self{
         
         let air = Tile::new(TILE_SIZE, None, 0);
-        let tilemap: [[Tile<'a>; 200]; 100] = [[air; 200]; 100];
+        let tilemap: [[Tile<'a>; 200]; 101] = [[air; 200]; 101];
         
         Self {
             tilemap,
@@ -27,14 +27,14 @@ impl<'a> Tilemap<'a> {
     } 
     
     pub fn draw(&self, renderer: &'a mut Renderer) {
-        let mut y = 0;
+        let mut x = 0;
         for i in self.tilemap.iter() {
-            let mut x = 0;
+            let mut y = 0;
             for j in i.iter() {
-                j.draw(renderer, (x * 16, y * 16));
-                 x = x + 1
+                j.draw(renderer, (y * 16, x * 16));
+                 y = y + 1
             }
-            y = y + 1;
+            x = x + 1;
         }
     }
 }
