@@ -1,4 +1,5 @@
 use crate::scenes;
+use crate::utils::{in_range, in_range_f32};
 use crate::{
     content::asset::AssetMan,
     rendering::renderer::Renderer,
@@ -66,6 +67,7 @@ impl<'a> Game<'a> {
 
     pub fn input(&mut self) {
         self.input.key_pressed = None;
+        self.input.key_up = None;
         for event in self.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. } => self.running = false,
@@ -136,7 +138,7 @@ impl<'a> Game<'a> {
                 }
             },
             State::Game => self.game.update(),
-            State::Town => self.town.update(&self.input, self.renderer.window.game_win_size(), time as f32),
+            State::Town => self.town.update(self.renderer, &self.input, self.renderer.window.game_win_size(), time as f32),
             State::Quit => {
                 self.renderer.window.canvas.window_mut().set_bordered(false);
                 if self.renderer.window.win_size().0 >= 20 && self.renderer.window.win_size().1 >= 100 
@@ -167,4 +169,5 @@ impl<'a> Game<'a> {
 
         self.renderer.present();
     }
+
 }

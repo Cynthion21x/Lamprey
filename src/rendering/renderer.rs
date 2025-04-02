@@ -11,7 +11,7 @@ use super::window::WindowM;
 
 pub struct Renderer {
     pub window: window::WindowM,
-    pub camera_pos: (i32, i32),
+    pub camera_pos: (f32, f32),
     pub scalar: f32,
 }
 
@@ -19,7 +19,7 @@ impl Renderer {
     
     pub fn new(windowm: WindowM) -> Self {
         
-        let camera_pos = (0, 0);
+        let camera_pos = (0.0, 0.0);
         let unitsize = windowm.win_size().1 / GAME_HEIGHT;
         let scalar = (unitsize / TILE_SIZE) as f32;
         Self{ 
@@ -45,17 +45,22 @@ impl Renderer {
 
     }
     
-    pub fn draw(&mut self, pos: (u32, u32), size: (u32, u32), sprite: &Texture) {
+    pub fn draw(&mut self, pos: (f32, f32), size: (u32, u32), sprite: &Texture) {
         
-        let pos = (((pos.0 as f32) * self.scalar) as i32, ((pos.1 as f32) * self.scalar) as i32);
+        let pos = ((pos.0 * self.scalar), (pos.1 * self.scalar));
         let size = ((size.0 as f32 * self.scalar) as u32, (size.1 as f32 * self.scalar) as u32);
         
-        if in_range_i32(pos.0, self.camera_pos.0 - size.0 as i32, self.camera_pos.0+ self.window.game_win_size().0 as i32)
-        && in_range_i32(pos.1, self.camera_pos.1 - size.1 as i32, self.camera_pos.1 + self.window.game_win_size().1 as i32) {
+        let camera_pos = tuple_times(self.camera_pos, self.scalar);
+        let camera_pos = tuple_add_f32(
+            camera_pos, (self.window.game_win_size().0 as f32 / - 2.0, 
+            self.window.game_win_size().1 as f32 / -2.0)
+        );
+        
+        if in_range_f32(pos.0, camera_pos.0 - size.0 as f32, camera_pos.0 + self.window.game_win_size().0 as f32)
+        && in_range_f32(pos.1, camera_pos.1 - size.1 as f32, camera_pos.1 + self.window.game_win_size().1 as f32) {
             
-            let screenpos = (pos.0 - self.camera_pos.0, pos.1 - self.camera_pos.1);         
+            let screenpos = (pos.0 - camera_pos.0, pos.1 - camera_pos.1);         
             let mut location = rect::Rect::new(screenpos.0 as i32, screenpos.1 as i32, size.0, size.1);
-            
             
             if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
                 let offset = (self.window.win_size().0 - self.window.game_win_size().0) / 2;

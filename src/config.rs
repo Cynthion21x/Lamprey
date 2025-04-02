@@ -8,3 +8,6 @@ pub const TITLE: &str = "Lamprey";
 pub const ASSET_PATH: &str = "./assets/";
 
 pub const FPS: f32 = 144.0;
+
+
+
