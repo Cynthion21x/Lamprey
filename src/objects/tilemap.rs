@@ -37,6 +37,15 @@ impl<'a> Tilemap<'a> {
             x = x + 1;
         }
     }
+    
+    pub fn get_tile(&self, x: isize, y: isize) -> Option<&Tile> {
+            if x >= 0 && y >= 0 && (y as usize) < self.tilemap.len() && (x as usize) < self.tilemap[0].len() {
+                Some(&self.tilemap[y as usize][x as usize])
+            } else {
+                None
+            }
+        }
+    
 }
 
 impl<'a> Tile <'a> {

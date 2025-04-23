@@ -1,5 +1,4 @@
 use crate::scenes;
-use crate::utils::{in_range, in_range_f32};
 use crate::{
     content::asset::AssetMan,
     rendering::renderer::Renderer,
@@ -48,7 +47,7 @@ impl<'a> Game<'a> {
         };
 
         let main_menu = scenes::main_menu::MainMenu::new(&assets);
-        let town = scenes::town::Town::new(&assets);
+        let town = scenes::town::Town::new(&assets, renderer);
         let game = scenes::game_scene::Game::new();
 
         Self {
@@ -167,6 +166,7 @@ impl<'a> Game<'a> {
             _ => {}
         }
 
+        self.renderer.letterbox();
         self.renderer.present();
     }
 

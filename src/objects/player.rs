@@ -1,15 +1,9 @@
-use std::fmt::Pointer;
-
 use sdl2::{
     render::Texture,
     keyboard::Keycode
 };
 use crate::{
-    config::TILE_SIZE, 
-    game::Inputs, 
-    renderer::Renderer, 
-    utils::*,
-    objects::tilemap::Tilemap
+    config::{TILE_SIZE, TITLE}, game::Inputs, objects::tilemap::Tilemap, renderer::Renderer, utils::*
 };
 
 pub struct Player<'a> {
@@ -34,9 +28,9 @@ impl<'a> Player<'a> {
             sprite,  
             visible: true,
             velocity: (0.0, 0.0),
-            floating: false,
+            floating: true,
             accelleration: (0.0, 0.0),
-            jumping: false,
+            jumping: true,
             jumpheigh: pos.1,   
         }
     }
@@ -55,14 +49,33 @@ impl<'a> Player<'a> {
         
         let map_pos = tuple_times(self.pos, 1.0 / 16.0);
         
-        if map_pos.1 + 3.0 < tilemap.tilemap.len() as f32 
-        && tilemap.tilemap[map_pos.1 as usize + 2][map_pos.0 as usize].tiletype == 1 
-        && collision((map_pos.0 * 16.0, (map_pos.1 + 3.0) * 16.0), (16, 16), self.pos, (16, 32)) {
+        
+        
+        if tilemap.tilemap[map_pos.1 as usize + 2][map_pos.0 as usize].tiletype == 1 {
             self.velocity.1 = 0.0;
             self.floating = false;
             self.jumping = false;
-            self.pos.1 = map_pos.1 * 16.0 - 1.0             
+            self.pos.1 = (map_pos.1 as u32) as f32 * 16.0
+        } else {
+            self.floating = true
+        }
+        
+        if tilemap.tilemap[map_pos.1 as usize][map_pos.0 as usize].tiletype == 1 {
+            self.velocity.0 = 0.0;
+            self.pos.0 = (map_pos.0 as u32 + 1) as f32 * 16.0
+        }
+        
+        if tilemap.tilemap[map_pos.1 as usize][map_pos.0 as usize].tiletype == 1 {
+            self.velocity.1 = 0.0;
+            self.jumping = false;
+            self.pos.1 = (map_pos.1 as u32 + 1) as f32 * 16.0
         } 
+        
+        if tilemap.tilemap[map_pos.1 as usize][map_pos.0 as usize + 1].tiletype == 1 {
+            self.velocity.0 = 0.0;
+            self.pos.0 = (map_pos.0 as u32) as f32 * 16.0
+        }
+        
     }
     
     pub fn movement(&mut self, input: &Inputs, time: f32) {
@@ -101,10 +114,10 @@ impl<'a> Player<'a> {
             self.jumping = false;
         }
         
-        if input.key_held.contains(&Keycode::Space) && (self.jumpheigh - self.pos.1) <= 50.0 && self.jumping {
-            self.velocity.1 = -150.0;
+        if input.key_held.contains(&Keycode::Space) && (self.jumpheigh - self.pos.1) <= 40.0 && self.jumping {
+            self.velocity.1 = -160.0;
             self.jumping = true;
-        } else if (self.jumpheigh - self.pos.1) > 50.0 {
+        } else if (self.jumpheigh - self.pos.1) > 40.0 {
             self.jumping = false;
         }
         

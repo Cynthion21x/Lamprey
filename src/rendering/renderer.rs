@@ -93,6 +93,34 @@ impl Renderer {
             .expect("Get better at drawing gui bozo");
         
     }
+    
+    pub fn letterbox(&mut self) {
+        
+        if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
+            let size = (self.window.win_size().0 - self.window.game_win_size().0) / 2;
+            
+            self.window.canvas.fill_rect(
+                rect::Rect::new(0, 0, size, self.window.win_size().1)
+            ).unwrap();
+            
+            self.window.canvas.fill_rect(
+                rect::Rect::new(size as i32 + self.window.game_win_size().0 as i32, 0, size, self.window.win_size().1)
+            ).unwrap();
+            
+        } else {
+            let size = (self.window.win_size().1 - self.window.game_win_size().1) / 2; 
+            
+            self.window.canvas.fill_rect(
+                rect::Rect::new(0, 0, self.window.win_size().0, size)
+            ).unwrap();
+            
+            self.window.canvas.fill_rect(
+                rect::Rect::new(0, size as i32 + self.window.game_win_size().1 as i32, self.window.win_size().0, size)
+            ).unwrap();
+            
+        } 
+        
+    }
 
     pub fn read_sheet(pos: (i32, i32)) -> Rect {
         
