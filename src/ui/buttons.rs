@@ -1,7 +1,7 @@
 use sdl2::render::Texture;
 use crate::game::Inputs;
 use crate::rendering::renderer::Renderer;
-use crate::utils;
+use crate::utils::*;
 
 pub struct Button<'a> {
     pub pos: (u32, u32),
@@ -11,21 +11,23 @@ pub struct Button<'a> {
     pub hover: bool,
     pub texture: &'a Texture<'a>,
     pub visible: bool,
-    pub centered: bool
+    pub centered: bool,
+    pub textheight: u32,
 }
 
 impl<'a> Button<'a> {
-    pub fn new(texture: &'a Texture<'a>) -> Self {
+    pub fn new(pos: (u32, u32), size: (u32, u32), texture: &'a Texture<'a>, textheight: u32) -> Self {
         
         Self { 
-            pos: (0, 0),
-            size: (0, 0),
+            pos,
+            size,
             pressed: false, 
             released: false,
             hover: false, 
             texture,
             visible: true,
-            centered: false
+            centered: false,
+            textheight,
         }
     }
     
@@ -38,7 +40,7 @@ impl<'a> Button<'a> {
         let xb = xlb + self.size.0;
         let yb = ylb + self.size.1;
         
-        if utils::in_range(input.mouse_pos.0, xlb, xb) && utils::in_range(input.mouse_pos.1, ylb, yb){
+        if in_range(input.mouse_pos.0, xlb, xb) && in_range(input.mouse_pos.1, ylb, yb){
             self.hover = true
         } else {
             self.hover = false
@@ -64,30 +66,37 @@ impl<'a> Button<'a> {
     
     pub fn draw_text(&self, text: &str, sheet: &Texture, renderer: &mut Renderer) {
         
-        let size = self.size.1 - (12.0 * renderer.scalar) as u32;
+        let length = text.chars().count() as u32;
+        let mut size = (7 * length, 9);
+        let y_pos;
+        let x_pos;
         
-        let pos; 
-        let length = text.chars()
-                         .count()
-                         as u32;
-        
-        if self.pressed {
-
-            pos = utils::tuple_add(
-                self.pos,
-                ((self.size.0 - (size * ((length * 7) - 2) / 9)) / 2, (9.0 * renderer.scalar) as u32)
-            );
-
+        if self.size.0 >= self.size.1 / size.1 * size.0 {
+            
+            let multiplyer = (self.size.1 * 5 / 6) / size.1;
+            size = tuple_times_u32(size, multiplyer);
+            
         } else {
-
-            pos = utils::tuple_add(
-                self.pos,
-                ((self.size.0 - (size * ((length * 7) - 2) / 9)) / 2, (4.0 * renderer.scalar) as u32)
-            );
-
+            
+            let multiplyer = (self.size.0 * 5 / 6) / size.0; 
+            size = tuple_times_u32(size, multiplyer);
         }
         
-        renderer.draw_font(pos, size, text, sheet); 
+        if !self.pressed {
+
+            let n = self.pos.1 - self.textheight;
+            
+            y_pos = n + center_y(size, self.size, 0).1;
+            x_pos = self.pos.0 + center_x(size, self.size, 0).0;
+            
+        } else {
+
+            y_pos = self.pos.1 + center_y(size, self.size, 0).1;
+            x_pos = self.pos.0 + center_x(size, self.size, 0).0;
+            
+        }
+        
+        renderer.draw_font((x_pos + 2, y_pos + 2), size.1, text, sheet); 
         
     }
     

@@ -22,8 +22,16 @@ pub fn tuple_times(tuple: (f32, f32), multiplyer: f32) -> (f32, f32) {
     (tuple.0 * multiplyer, tuple.1 * multiplyer)
 }
 
+pub fn tuple_times_u32(tuple: (u32, u32), multiplyer: u32) -> (u32, u32) {
+    (tuple.0 * multiplyer, tuple.1 * multiplyer)
+}
+
 pub fn center_x(object: (u32, u32), boundary: (u32, u32), y_pos: u32) -> (u32, u32) {
     ((boundary.0 - object.0) / 2, y_pos)
+}
+
+pub fn center_y(object: (u32, u32), boundary: (u32, u32), x_pos: u32) -> (u32, u32) {
+    (x_pos, (boundary.1 - object.1) / 2)
 }
 
 pub fn collision(objectpos: (f32, f32), objectsize: (u32, u32), playerpos: (f32, f32), playersize: (u32, u32)) -> bool{
@@ -35,5 +43,11 @@ pub fn collision(objectpos: (f32, f32), objectsize: (u32, u32), playerpos: (f32,
     } else {
         false
     }
+    
+}
+
+pub fn dist(pos1: (f32, f32), pos2: (f32, f32)) -> f32{
+    
+        ((pos2.0 - pos1.0).powf(2.0) + (pos2.1 - pos1.1).powf(2.0)).sqrt()
     
 }

@@ -9,7 +9,7 @@ impl WindowM {
     
     pub fn new(video_subsystem: &VideoSubsystem) -> Self {
         
-        let win = video_subsystem.window(config::TITLE, config::WIN_WIDTH, config::WIN_HEIGHT)
+        let win = video_subsystem.window(config::TITLE, config::WIN_WIDTH * 2, config::WIN_HEIGHT * 2)
             .position_centered()
             .resizable()
             .build()

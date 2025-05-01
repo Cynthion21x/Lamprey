@@ -5,7 +5,7 @@ pub struct Photo<'a> {
     pub pos: (u32, u32),
     pub size: (u32, u32),
     texture: &'a Texture<'a>,
-    visible: bool,
+    pub visible: bool,
 }
 
 impl<'a> Photo<'a> {

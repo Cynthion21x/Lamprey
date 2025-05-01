@@ -1,9 +1,12 @@
 use sdl2::{
-    render::Texture,
-    keyboard::Keycode
+    keyboard::Keycode,
+    render::Texture
 };
 use crate::{
-    config::{TILE_SIZE, TITLE}, game::Inputs, objects::tilemap::Tilemap, renderer::Renderer, utils::*
+    config::TILE_SIZE, 
+    game::Inputs, 
+    objects::tilemap::Tilemap, 
+    renderer::Renderer, utils::*
 };
 
 pub struct Player<'a> {
@@ -41,44 +44,48 @@ impl<'a> Player<'a> {
         
         let size = (self.size.0 * TILE_SIZE, self.size.1 * TILE_SIZE);
         
-        renderer.draw(self.pos, size, self.sprite);
+        let dpos = (self.pos.0 - 7.5, self.pos.1);
+        renderer.draw(dpos, size, self.sprite);
         
     }
     
-    pub fn physics(&mut self, tilemap: &Tilemap) {
+    pub fn physics(&mut self, tilemap: &Tilemap, time: f32) {
         
-        let map_pos = tuple_times(self.pos, 1.0 / 16.0);
+        let _map_pos = tuple_times(self.pos, 1.0 / 16.0);
+        let newx = ((self.pos.0 + (self.velocity.0 * time)) / 16.0) as usize;
+        let newy = ((self.pos.1 + (self.velocity.1 * time)) / 16.0) as usize;
         
+        let oldy = (self.pos.1 / 16.0) as usize; 
+        let oldx = (self.pos.0 / 16.0) as usize;
         
-        
-        if tilemap.tilemap[map_pos.1 as usize + 2][map_pos.0 as usize].tiletype == 1 {
+        if tilemap.tilemap[newy + 2][oldx].tiletype == 1 
+        || tilemap.tilemap[newy - 1][oldx].tiletype == 1 
+        || tilemap.tilemap[newy + 2][oldx + 1].tiletype == 1 
+        || tilemap.tilemap[newy - 1][oldx + 1].tiletype == 1 {
             self.velocity.1 = 0.0;
             self.floating = false;
             self.jumping = false;
-            self.pos.1 = (map_pos.1 as u32) as f32 * 16.0
         } else {
-            self.floating = true
+            self.floating = true;
         }
         
-        if tilemap.tilemap[map_pos.1 as usize][map_pos.0 as usize].tiletype == 1 {
-            self.velocity.0 = 0.0;
-            self.pos.0 = (map_pos.0 as u32 + 1) as f32 * 16.0
+        if tilemap.tilemap[oldy][newx].tiletype == 1
+        || tilemap.tilemap[oldy + 1][newx].tiletype == 1
+        || tilemap.tilemap[oldy][newx + 1].tiletype == 1
+        || tilemap.tilemap[oldy + 1][newx + 1].tiletype == 1{
+            self.velocity.0 *= -1.0;
+            self.accelleration.0 *= -1.0;
         }
-        
-        if tilemap.tilemap[map_pos.1 as usize][map_pos.0 as usize].tiletype == 1 {
-            self.velocity.1 = 0.0;
-            self.jumping = false;
-            self.pos.1 = (map_pos.1 as u32 + 1) as f32 * 16.0
-        } 
-        
-        if tilemap.tilemap[map_pos.1 as usize][map_pos.0 as usize + 1].tiletype == 1 {
-            self.velocity.0 = 0.0;
-            self.pos.0 = (map_pos.0 as u32) as f32 * 16.0
-        }
+            
+        let a = tuple_times(self.accelleration, time);
+        self.velocity = tuple_add_f32(self.velocity, a);
+            
+        let v = tuple_times(self.velocity, time);
+        self.pos = tuple_add_f32(self.pos, v);
         
     }
     
-    pub fn movement(&mut self, input: &Inputs, time: f32) {
+    pub fn movement(&mut self, input: &Inputs) {
         
         self.velocity.0 = self.velocity.0 * 0.9;
         
@@ -120,12 +127,6 @@ impl<'a> Player<'a> {
         } else if (self.jumpheigh - self.pos.1) > 40.0 {
             self.jumping = false;
         }
-        
-        let a = tuple_times(self.accelleration, time);
-        self.velocity = tuple_add_f32(self.velocity, a);
-        
-        let v = tuple_times(self.velocity, time);
-        self.pos = tuple_add_f32(self.pos, v);
         
     }   
 }

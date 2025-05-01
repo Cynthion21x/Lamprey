@@ -1,4 +1,4 @@
-use crate::{content::asset::AssetMan, game::{Inputs, State}, rendering::renderer::Renderer, ui::{photo, buttons}, utils::center_x, utils::tuple_add};
+use crate::{config, content::asset::AssetMan, game::{Inputs, State}, rendering::renderer::Renderer, ui::{buttons, photo}, utils::{center_x, tuple_add}};
 
 pub struct MainMenu<'a> {
     play_button: buttons::Button<'a>,
@@ -17,14 +17,19 @@ impl<'a> MainMenu<'a> {
         let button = assets.sprite_from_string("rect_up").unwrap();
         let button_d = assets.sprite_from_string("rect_down").unwrap();
         
-        let play_button = buttons::Button::new(button);
-        let play_button_down = buttons::Button::new(button_d);
+        let mut play_button = buttons::Button::new((0, 0), (76, 30), button, 5);
+        let mut play_button_down = buttons::Button::new((0, 0), (76, 30), button_d, 5);
+        play_button.pos = center_x(play_button.size, (config::WIN_WIDTH, config::WIN_HEIGHT), config::WIN_HEIGHT / 3);
+        play_button_down.pos = tuple_add(play_button.pos, (0, 6));
         
-        let quit_button = buttons::Button::new( button);
-        let quit_button_d = buttons::Button::new(button_d);
+        let mut quit_button = buttons::Button::new((0, 0), (76, 30), button, 5);
+        let mut quit_button_d = buttons::Button::new((0, 0), (76, 30), button_d, 5);
+        quit_button.pos = center_x(quit_button.size, (config::WIN_WIDTH, config::WIN_HEIGHT), config::WIN_HEIGHT / 2);
+        quit_button_d.pos = tuple_add(quit_button.pos, (0, 6));
         
-        let title = photo::Photo::new((0, 20), (223, 22), assets.sprite_from_string("Title").unwrap());
-        let background = photo::Photo::new((0, 0), (0, 0), assets.sprite_from_string("titleScreen").unwrap()); 
+        let mut title = photo::Photo::new((0, 20), (223, 22), assets.sprite_from_string("Title").unwrap());
+        title.pos = center_x(title.size, (config::WIN_WIDTH, config::WIN_HEIGHT), title.size.1);
+        let background = photo::Photo::new((0, 0), (512, 288), assets.sprite_from_string("titleScreen").unwrap()); 
                
         Self { 
             play_button,
@@ -37,29 +42,7 @@ impl<'a> MainMenu<'a> {
         }
     }
 
-    pub fn update(&mut self, input: &Inputs, windowsize: (u32, u32), scalar: f32) {
-        
-
-        self.title.size = ((223.0 * scalar) as u32, (22.0 * scalar) as u32);
-        self.title.pos = center_x(self.title.size, windowsize, self.title.size.1);
-        
-        self.play_button.size = ((38.0 * scalar * 2.0) as u32, (15.0 * scalar * 2.0) as u32);
-        self.play_button.pos = center_x(self.play_button.size, windowsize, windowsize.1 / 3);
-        
-        self.play_button_down.size = ((38.0 * scalar * 2.0) as u32, (12.0 * scalar * 2.0) as u32);
-        self.play_button_down.pos = tuple_add(self.play_button.pos, (0, (6.0 * scalar) as u32));
-        
-        self.quit_button.size = ((38.0 * scalar * 2.0) as u32, (15.0 * scalar * 2.0) as u32);
-        self.quit_button.pos = center_x(self.play_button.size, windowsize, windowsize.1 / 2);
-        
-        self.quit_button_d.size = ((38.0 * scalar * 2.0) as u32, (12.0 * scalar * 2.0) as u32);
-        self.quit_button_d.pos = tuple_add(self.quit_button.pos, (0, (6.0 * scalar) as u32));
-        
-        if windowsize.0 > windowsize.1 * 16 / 9 {
-            self.background.size = (windowsize.1 * 256 / 144, windowsize.1);
-        } else {
-            self.background.size = (windowsize.0, windowsize.0 * 144 / 256);            
-        }
+    pub fn update(&mut self, input: &Inputs) {
 
         self.play_button.run(input);
         self.quit_button.run(input);
@@ -92,8 +75,8 @@ impl<'a> MainMenu<'a> {
             self.quit_button_d.draw(renderer);
         }
         
-        self.play_button.draw_text("PLAY", assets.sprite_from_string("black_font").unwrap(), renderer);
-        self.quit_button.draw_text("QUIT", assets.sprite_from_string("black_font").unwrap(), renderer);
+        self.play_button.draw_text("PLAY", assets.sprite_from_string("font").unwrap(), renderer);
+        self.quit_button.draw_text("QUIT", assets.sprite_from_string("font").unwrap(), renderer);
     }
 
 }

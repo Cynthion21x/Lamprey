@@ -129,7 +129,7 @@ impl<'a> Game<'a> {
 
         match self.state {
             State::MainMenu => {
-                self.main_menu.update(&self.input, self.renderer.window.game_win_size(), self.renderer.scalar);
+                self.main_menu.update(&self.input);
                 if self.main_menu.new_state == State::Town{
                     self.state = State::Town
                 } else if self.main_menu.new_state == State::Quit {

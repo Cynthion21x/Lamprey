@@ -78,6 +78,8 @@ impl Renderer {
     
     pub fn draw_gui(&mut self, pos: (u32, u32), size: (u32, u32), sprite: &Texture) {
         
+        let size = ((size.0 as f32 * self.scalar) as u32, (size.1 as f32 * self.scalar) as u32);
+        let pos = ((pos.0 as f32 * self.scalar) as u32, (pos.1 as f32 * self.scalar) as u32);
         let mut location = rect::Rect::new(pos.0 as i32, pos.1 as i32, size.0, size.1);
         
         if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
@@ -97,7 +99,7 @@ impl Renderer {
     pub fn letterbox(&mut self) {
         
         if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
-            let size = (self.window.win_size().0 - self.window.game_win_size().0) / 2;
+            let size = (self.window.win_size().0 - self.window.game_win_size().0) / 2 + 1;
             
             self.window.canvas.fill_rect(
                 rect::Rect::new(0, 0, size, self.window.win_size().1)
@@ -108,7 +110,7 @@ impl Renderer {
             ).unwrap();
             
         } else {
-            let size = (self.window.win_size().1 - self.window.game_win_size().1) / 2; 
+            let size = (self.window.win_size().1 - self.window.game_win_size().1) / 2 + 1; 
             
             self.window.canvas.fill_rect(
                 rect::Rect::new(0, 0, self.window.win_size().0, size)
@@ -128,10 +130,11 @@ impl Renderer {
         
     }
     
-    pub fn draw_font(&mut self, pos: (u32, u32), size: u32,  text: &str, sheet: &Texture) {
+    pub fn draw_font(&mut self, mut pos: (u32, u32), size: u32,  text: &str, sheet: &Texture) {
         
         let mut a = 0;
-        let actsize = ((size as f32 * 7.0 / 9.0) as u32, size);
+        let actsize = (((size as f32 * 7.0 / 9.0) * self.scalar) as u32, (size as f32 * self.scalar) as u32);
+        pos = ((pos.0 as f32 * self.scalar) as u32, (pos.1 as f32 * self.scalar) as u32);
         
         
         for i in text.chars() {
@@ -142,6 +145,7 @@ impl Renderer {
             if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
                 let offset = (self.window.win_size().0 - self.window.game_win_size().0) / 2;
                 pos.x = pos.x + offset as i32
+                
             } else {
                 let offset = (self.window.win_size().1 - self.window.game_win_size().1) / 2; 
                 pos.y = pos.y + offset as i32 
@@ -149,7 +153,7 @@ impl Renderer {
             
             self.window.canvas.copy(sheet, letter, pos).expect("draw_font problems");
             
-            a = a + 1
+            a += 1
         }
         
         

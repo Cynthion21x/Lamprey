@@ -1,5 +1,5 @@
-pub const WIN_WIDTH: u32 = 800;
-pub const WIN_HEIGHT: u32 = 600;
+pub const WIN_WIDTH: u32 = 512;
+pub const WIN_HEIGHT: u32 = 288;
 
 pub const GAME_HEIGHT: u32 = 18;
 pub const TILE_SIZE: u32 = 16;

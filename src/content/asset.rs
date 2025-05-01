@@ -20,7 +20,7 @@ impl<'a> AssetMan<'a> {
             .expect("Where did all my assets go :(");
         
         for i in paths {
-            
+
             let y = i.unwrap().path();
             let ext = y.extension().unwrap_or(&OsStr::new(""));
             let location = y.to_str().unwrap();
