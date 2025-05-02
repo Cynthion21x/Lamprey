@@ -1,4 +1,3 @@
-use crate::rendering::{self, renderer};
 use crate::scenes;
 use crate::{
     content::asset::AssetMan,

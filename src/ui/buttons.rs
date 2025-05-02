@@ -71,7 +71,7 @@ impl<'a> Button<'a> {
             renderer.draw_gui((self.pos.0, self.pos.1 + self.textheight - 3), self.size, self.texture_down);
         }
         
-        self.draw_text(self.text, assets.sfs("font").unwrap(), renderer);
+        self.draw_text(self.text, assets.sfs("black_font").unwrap(), renderer);
     }
     
     pub fn draw_text(&self, text: &str, sheet: &Texture, renderer: &mut Renderer) {

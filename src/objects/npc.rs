@@ -58,49 +58,52 @@ impl<'a> NPC<'a> {
     
     pub fn update(&mut self, player: (f32, f32), input: &Inputs, textbox: &mut Photo) -> Option<(String, String)> {
         
-        self.bubble = dist(player, self.pos) < 50.0;
+        if dist(player, self.pos) < 50.0 {
         
-        if !self.speaking && self.textstate == 0{
-            self.t = 0
-        } else if !self.speaking && self.textstate == 1 {
-            self.t = self.textvalue.0
-        } else if !self.speaking && self.textstate == 2 {
-            self.t = self.textvalue.1
-        }
+            self.bubble = true;
+            
+            if !self.speaking && self.textstate == 0{
+                self.t = 0
+            } else if !self.speaking && self.textstate == 1 {
+                self.t = self.textvalue.0
+            } else if !self.speaking && self.textstate == 2 {
+                self.t = self.textvalue.1
+            }
+            
+            if self.question && input.key_pressed == Some(Keycode::Z) {
+                
+                self.t += 1;
+                self.textstate = 1;
+                self.question = false;
+                
+                return self.speak(self.t, textbox)
+                
+            } else if self.question && input.key_pressed == Some(Keycode::X) {
+                
+                textbox.visible = false;
+                self.speaking = false;
+                self.question = false;
+                
+            }
+            
+            if !self.close && !self.question && input.key_pressed == Some(Keycode::E) {
+                
+                self.t += 1;
+                self.speaking = true;
+                return self.speak(self.t, textbox);
+                
+            } else if self.close && input.key_pressed == Some(Keycode::E) {
+                
+                textbox.visible = false;
+                self.speaking = false;
+                self.question = false;
+                self.close = false;
+                
+            }
         
-        if self.question && input.key_pressed == Some(Keycode::Z) {
-            
-            self.t += 1;
-            self.textstate = 1;
-            self.question = false;
-            
-            return self.speak(self.t, textbox)
-            
-        } else if self.question && input.key_pressed == Some(Keycode::X) {
-            
-            textbox.visible = false;
-            self.speaking = false;
-            self.question = false;
-            
-        }
+            None
         
-        if !self.close && !self.question && input.key_pressed == Some(Keycode::E) {
-            
-            self.t += 1;
-            self.speaking = true;
-            return self.speak(self.t, textbox);
-            
-        } else if self.close && input.key_pressed == Some(Keycode::E) {
-            
-            textbox.visible = false;
-            self.speaking = false;
-            self.question = false;
-            self.close = false;
-            
-        }
-      
-        None
-        
+        } else {None}
     }
     
     pub fn speak(&self, textnum: usize, textbox: &mut Photo) -> Option<(String, String)> {
