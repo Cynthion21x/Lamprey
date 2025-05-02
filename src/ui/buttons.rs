@@ -2,6 +2,7 @@ use sdl2::render::Texture;
 use crate::game::Inputs;
 use crate::rendering::renderer::Renderer;
 use crate::utils::*;
+use crate::content::asset::AssetMan;
 
 pub struct Button<'a> {
     pub pos: (u32, u32),
@@ -10,13 +11,15 @@ pub struct Button<'a> {
     pub released: bool,
     pub hover: bool,
     pub texture: &'a Texture<'a>,
+    pub texture_down: &'a Texture<'a>,
     pub visible: bool,
     pub centered: bool,
     pub textheight: u32,
+    pub text: &'a str,
 }
 
 impl<'a> Button<'a> {
-    pub fn new(pos: (u32, u32), size: (u32, u32), texture: &'a Texture<'a>, textheight: u32) -> Self {
+    pub fn new(pos: (u32, u32), size: (u32, u32), texture: &'a Texture<'a>, texture_down: &'a Texture<'a>, text: &'a str, textheight: u32) -> Self {
         
         Self { 
             pos,
@@ -25,9 +28,11 @@ impl<'a> Button<'a> {
             released: false,
             hover: false, 
             texture,
+            texture_down,
             visible: true,
             centered: false,
             textheight,
+            text,
         }
     }
     
@@ -41,9 +46,9 @@ impl<'a> Button<'a> {
         let yb = ylb + self.size.1;
         
         if in_range(input.mouse_pos.0, xlb, xb) && in_range(input.mouse_pos.1, ylb, yb){
-            self.hover = true
+            self.hover = true;
         } else {
-            self.hover = false
+            self.hover = false;
         }
         
         if self.hover && input.mouse_pressed  {
@@ -56,12 +61,17 @@ impl<'a> Button<'a> {
         }
     }
     
-    pub fn draw(&self, renderer: &mut Renderer) {
+    pub fn draw(&self, renderer: &mut Renderer, assets: &AssetMan) {
         
         if !self.visible { return () }
         
-        renderer.draw_gui(self.pos, self.size, self.texture);
+        if !self.pressed {
+            renderer.draw_gui(self.pos, self.size, self.texture);
+        } else {
+            renderer.draw_gui((self.pos.0, self.pos.1 + self.textheight - 3), self.size, self.texture_down);
+        }
         
+        self.draw_text(self.text, assets.sfs("font").unwrap(), renderer);
     }
     
     pub fn draw_text(&self, text: &str, sheet: &Texture, renderer: &mut Renderer) {

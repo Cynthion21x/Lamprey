@@ -21,8 +21,8 @@ impl<'a> Tilemap<'a> {
     pub fn new(assets: &'a AssetMan) -> Self{
         
         let _air = Tile::new(TILE_SIZE, None, 0);
-        let _grid = Tile::new(TILE_SIZE, assets.sprite_from_string("grid"), 0);
-        let tilemap: [[Tile<'a>; 200]; 101] = [[_grid; 200]; 101];
+        let _grid = Tile::new(TILE_SIZE, assets.sfs("grid"), 0);
+        let tilemap: [[Tile<'a>; 200]; 101] = [[_air; 200]; 101];
         
         Self {
             tilemap,

@@ -1,3 +1,5 @@
+use sdl2::render::Texture;
+
 use crate::{
     config::TILE_SIZE, 
     content::asset::AssetMan, 
@@ -17,8 +19,11 @@ pub struct Town<'a> {
     player: Player<'a>,
     steve: NPC<'a>,
     town: Static<'a>,
+    text_name: String,
+    text_words: String,
     tilemap: Tilemap<'a>,
     textbox: Photo<'a>,
+    font: &'a Texture<'a>
 }
 
 impl<'a> Town<'a> {
@@ -26,13 +31,15 @@ impl<'a> Town<'a> {
     pub fn new(assets: &'a AssetMan, camera: &mut Renderer) -> Self {
         
         let mut tilemap = Tilemap::new(assets);
-        let bubblet = assets.sprite_from_string("speech").unwrap();
-        let skybox = Photo::new((0, 0), (0, 0), assets.sprite_from_string("Skybox").unwrap()); 
-        let player = Player::new((100.0, 544.3), (2, 2), assets.sprite_from_string("player").unwrap());
-        let steve = NPC::new((0.0, 544.0), (2, 2), assets.sprite_from_string("steve").unwrap(), bubblet);
-        let town = Static::new((0.0, 0.0), (150, 45), assets.sprite_from_string("town").unwrap());
+        let bubblet = assets.sfs("speech").unwrap();
+        let font = assets.sfs("black_font").unwrap();
+        let skybox = Photo::new((0, 0), (0, 0), assets.sfs("Skybox").unwrap()); 
+        let player = Player::new((100.0, 544.3), (2, 2), assets.sfs("player").unwrap());
+        let steve = NPC::new((0.0, 544.0), (2, 2), assets.sfs("steve").unwrap(), bubblet, assets.tfs("Steve").unwrap(), (4, 5));
+        let town = Static::new((0.0, 0.0), (150, 45), assets.sfs("town").unwrap());
         let ground = Tile::new(TILE_SIZE, None, 1);
-        let textbox = Photo::new((32, 100), ((448.0 * camera.scalar) as u32, (80.0 * camera.scalar) as u32), assets.sprite_from_string("textbox").unwrap());
+        let mut textbox = Photo::new((32, 190), (448, 80), assets.sfs("textbox").unwrap());
+        textbox.visible = false;
         
         for i in 0..122 {
             tilemap.tilemap[36][i] = ground;
@@ -41,7 +48,9 @@ impl<'a> Town<'a> {
         for i in 0..tilemap.tilemap.len() {
             tilemap.tilemap[i][0] = ground;
         }
-    
+        
+        let text_name = String::new();
+        let text_words = String::new();
         
         camera.camera_pos.0 = player.pos.0 + (player.size.0 as f32 * 16.0 / 2.0);
         camera.camera_pos.1 = player.pos.1;
@@ -53,6 +62,9 @@ impl<'a> Town<'a> {
             town,
             tilemap,
             textbox,
+            font,
+            text_name,
+            text_words,
         }
         
     }
@@ -61,7 +73,12 @@ impl<'a> Town<'a> {
         
         self.player.movement(input);
         self.player.physics(&self.tilemap, time);
-        self.steve.update(self.player.pos, input, &mut self.textbox);
+        let speech = self.steve.update(self.player.pos, input, &mut self.textbox);
+        if speech.is_some() {
+            let s = speech.unwrap();
+            self.text_name = s.1;
+            self.text_words = s.0;
+        }
         
         if windowsize.0 > windowsize.1 * 16 / 9 {
             self.skybox.size = (windowsize.1 * 256 / 144, windowsize.1);
@@ -77,7 +94,7 @@ impl<'a> Town<'a> {
           
     }
 
-    pub fn render(&self, renderer: &mut Renderer) {
+    pub fn render(&mut self, renderer: &mut Renderer) {
 
         self.skybox.draw(renderer);
         self.town.draw(renderer);
@@ -86,6 +103,35 @@ impl<'a> Town<'a> {
         self.player.draw(renderer); 
         self.textbox.draw(renderer);
         
-    }
+        if self.textbox.visible {
+            
+            renderer.draw_font((45, 175), 15, &self.text_name, &self.font);
+            
+            let mut h = 203;
+            let mut temp = String::new();
+            
+            for i in self.text_words.chars() {
+                
 
+                if !(i == char::from_u32(10).unwrap() || i == ';') {
+                    
+                    temp = format!("{}{}", temp, i);
+                    
+                } else {
+                    
+                    renderer.draw_font((45, h), 12, &temp, &self.font);
+                    h += 13;
+                    temp = String::new();
+                }
+                
+                if i == ';' {
+                    self.steve.question = true;
+                }
+                
+                if i == '§' {
+                    self.steve.close = true;
+                }
+            }
+        }
+    }
 }

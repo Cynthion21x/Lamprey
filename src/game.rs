@@ -1,3 +1,4 @@
+use crate::rendering::{self, renderer};
 use crate::scenes;
 use crate::{
     content::asset::AssetMan,
@@ -104,6 +105,8 @@ impl<'a> Game<'a> {
                     if yoffset < y as u32 {
                     self.input.mouse_pos.1 = self.input.mouse_pos.1 - yoffset;
                     }
+                    
+                    self.input.mouse_pos = ((self.input.mouse_pos.0 as f32 / self.renderer.scalar) as u32, (self.input.mouse_pos.1 as f32 / self.renderer.scalar) as u32);
                     
                 },
                 _ => {}
