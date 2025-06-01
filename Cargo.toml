@@ -5,6 +5,7 @@ edition = "2024"
 build = "build.rs"
 
 [dependencies]
+rand = "0.9.1"
 
 [dependencies.sdl2]
 version = "0.37.0"

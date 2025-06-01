@@ -136,7 +136,6 @@ impl Renderer {
         let actsize = (((size as f32 * 7.0 / 9.0) * self.scalar) as u32, (size as f32 * self.scalar) as u32);
         pos = ((pos.0 as f32 * self.scalar) as u32, (pos.1 as f32 * self.scalar) as u32);
         
-        
         for i in text.chars() {
             
             let letter = letterpos::letterpos(&i);
@@ -159,6 +158,41 @@ impl Renderer {
         
     }
 
+    pub fn draw_font_real(&mut self, mut pos: (u32, u32), size: u32,  text: &str, sheet: &Texture) {
+        
+        let mut a = 0;
+        let actsize = (((size as f32 * 7.0 / 9.0) * self.scalar) as u32, (size as f32 * self.scalar) as u32);
+        pos = ((pos.0 as f32 * self.scalar) as u32, (pos.1 as f32 * self.scalar) as u32);
+        
+        let camera_pos = tuple_times(self.camera_pos, self.scalar);
+        let camera_pos = tuple_add_f32(
+            camera_pos, (self.window.game_win_size().0 as f32 / - 2.0, 
+            self.window.game_win_size().1 as f32 / -2.0)
+        );
+        
+        let pos = (pos.0 as f32 - camera_pos.0, pos.1 as f32 - camera_pos.1);  
+        
+        for i in text.chars() {
+            
+            let letter = letterpos::letterpos(&i);
+            let mut pos = Rect::new((pos.0 as u32 + a * actsize.0) as i32, (pos.1) as i32, actsize.0, actsize.1);
+            
+            if self.window.win_size().0 > self.window.win_size().1 * 16 / 9 {
+                let offset = (self.window.win_size().0 - self.window.game_win_size().0) / 2;
+                pos.x = pos.x + offset as i32
+                
+            } else {
+                let offset = (self.window.win_size().1 - self.window.game_win_size().1) / 2; 
+                pos.y = pos.y + offset as i32 
+            }
+            
+            self.window.canvas.copy(sheet, letter, pos).expect("draw_font problems");
+            
+            a += 1
+        }
+        
+        
+    }
     
     pub fn clear(&mut self) {
         self.window.canvas.set_draw_color(Color::RGB(0, 0, 0));

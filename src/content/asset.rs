@@ -7,7 +7,7 @@ use std::fs;
 pub struct AssetMan<'a> {
     pub texture_maker: &'a TextureCreator<WindowContext>,
     pub sprite: Vec<(Texture<'a>, String)>,
-    pub npctext: Vec<(Vec<String>, String)>
+    pub npctext: Vec<(Vec<String>, String)>,
 }
 
 impl<'a> AssetMan<'a> {

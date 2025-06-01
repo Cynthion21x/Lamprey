@@ -29,6 +29,7 @@ pub struct Game<'a> {
     pub assets: &'a AssetMan<'a>,
     pub state: State,
     pub input: Inputs,
+    pub old_state: State,
 
     main_menu: scenes::main_menu::MainMenu<'a>,
     town: scenes::town::Town<'a>,
@@ -60,7 +61,8 @@ impl<'a> Game<'a> {
             main_menu,
             town,
             game,
-            clock: 1.0 / config::FPS
+            clock: 1.0 / config::FPS,
+            old_state: State::MainMenu
         }
     }
 
@@ -133,6 +135,7 @@ impl<'a> Game<'a> {
             State::MainMenu => {
                 self.main_menu.update(&self.input);
                 if self.main_menu.new_state == State::Town{
+                    self.old_state = State::MainMenu;
                     self.state = State::Town
                 } else if self.main_menu.new_state == State::Quit {
                     self.state = State::Quit

@@ -6,9 +6,9 @@ use crate::{
 };
 
 pub struct Static<'a> {
-        pos: (f32, f32),
-        size: (u32, u32),
-        sprite: &'a Texture<'a>,
+        pub pos: (f32, f32),
+        pub size: (u32, u32),
+        pub sprite: &'a Texture<'a>,
 }
 
 

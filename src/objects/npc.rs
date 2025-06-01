@@ -103,7 +103,10 @@ impl<'a> NPC<'a> {
         
             None
         
-        } else {None}
+        } else {
+            self.bubble = false;
+            None
+        }
     }
     
     pub fn speak(&self, textnum: usize, textbox: &mut Photo) -> Option<(String, String)> {

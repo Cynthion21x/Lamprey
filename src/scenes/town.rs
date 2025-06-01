@@ -8,10 +8,12 @@ use crate::{
         npc::NPC,
         player::Player, 
         statics::Static, 
-        tilemap::{Tile, Tilemap}
+        tilemap::{Tile, Tilemap},
+        shop::Shop,
         }, 
     renderer::Renderer, 
-    ui::photo::Photo
+    ui::photo::Photo,
+    
 };
 
 pub struct Town<'a> {
@@ -23,7 +25,9 @@ pub struct Town<'a> {
     text_words: String,
     tilemap: Tilemap<'a>,
     textbox: Photo<'a>,
-    font: &'a Texture<'a>
+    font: &'a Texture<'a>,
+    money: Photo<'a>,
+    shop: Shop<'a>,
 }
 
 impl<'a> Town<'a> {
@@ -34,10 +38,13 @@ impl<'a> Town<'a> {
         let bubblet = assets.sfs("speech").unwrap();
         let font = assets.sfs("black_font").unwrap();
         let skybox = Photo::new((0, 0), (0, 0), assets.sfs("Skybox").unwrap()); 
-        let player = Player::new((100.0, 544.3), (2, 2), assets.sfs("player").unwrap());
-        let steve = NPC::new((0.0, 544.0), (2, 2), assets.sfs("steve").unwrap(), bubblet, assets.tfs("Steve").unwrap(), (4, 5));
+        let player = Player::new((100.0, 544.6), (2, 2), assets.sfs("player").unwrap());
+        let money = Photo::new((10, 10), (24, 24), assets.sfs("coin").unwrap());
+        let steve = NPC::new((0.0, 545.0), (2, 2), assets.sfs("steve").unwrap(), bubblet, assets.tfs("Steve").unwrap(), (4, 5));
         let town = Static::new((0.0, 0.0), (150, 45), assets.sfs("town").unwrap());
         let ground = Tile::new(TILE_SIZE, None, 1);
+        let shopsprite = Static::new((40.0, 513.0), (7, 4), assets.sfs("market").unwrap());
+        let shop = Shop::new(shopsprite, assets);
         let mut textbox = Photo::new((32, 190), (448, 80), assets.sfs("textbox").unwrap());
         textbox.visible = false;
         
@@ -65,14 +72,21 @@ impl<'a> Town<'a> {
             font,
             text_name,
             text_words,
+            money,
+            shop,
         }
         
     }
 
     pub fn update(&mut self, camera: &mut Renderer, input: &Inputs, windowsize: (u32, u32), time: f32) {
         
-        self.player.movement(input);
-        self.player.physics(&self.tilemap, time);
+        if !self.textbox.visible {
+            
+            self.player.movement(input);
+            self.player.physics(&self.tilemap, time);
+            self.shop.update(input, self.player.pos);
+            
+        }
         let speech = self.steve.update(self.player.pos, input, &mut self.textbox);
         if speech.is_some() {
             let s = speech.unwrap();
@@ -100,8 +114,12 @@ impl<'a> Town<'a> {
         self.town.draw(renderer);
         self.tilemap.draw(renderer);
         self.steve.draw(renderer);
+        self.shop.draw(renderer);
         self.player.draw(renderer); 
         self.textbox.draw(renderer);
+        self.money.draw(renderer);
+        let mon = format!("{}", self.player.money);
+        renderer.draw_font((38, 16), 15, &mon, self.font);
         
         if self.textbox.visible {
             
@@ -117,7 +135,7 @@ impl<'a> Town<'a> {
                     
                     temp = format!("{}{}", temp, i);
                     
-                } else {
+                } else if temp != "" {
                     
                     renderer.draw_font((45, h), 12, &temp, &self.font);
                     h += 13;

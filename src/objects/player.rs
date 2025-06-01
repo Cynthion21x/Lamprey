@@ -19,6 +19,7 @@ pub struct Player<'a> {
     floating: bool,
     jumping: bool,
     jumpheigh: f32,
+    pub money: u32,
 }
 
 impl<'a> Player<'a> {
@@ -34,7 +35,8 @@ impl<'a> Player<'a> {
             floating: true,
             accelleration: (0.0, 0.0),
             jumping: true,
-            jumpheigh: pos.1,   
+            jumpheigh: pos.1, 
+            money: 0
         }
     }
     
@@ -102,7 +104,17 @@ impl<'a> Player<'a> {
                         self.accelleration.0 = - 512.0
                     } 
                 },
+                Keycode::LEFT => {
+                    if self.velocity.0 > - 256.0 && self.pos.0 > 0.0 {
+                        self.accelleration.0 = - 512.0
+                    } 
+                },
                 Keycode::D => {
+                    if self.velocity.0 < 256.0 {
+                        self.accelleration.0 = 512.0
+                    }
+                },
+                Keycode::RIGHT => {
                     if self.velocity.0 < 256.0 {
                         self.accelleration.0 = 512.0
                     }
